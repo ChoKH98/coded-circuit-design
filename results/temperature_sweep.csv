@@ -1,0 +1,9 @@
+mode,T_C,T_K,I_uA,f_fft_ghz,v_swing_V,p_dc_uW,Rs_Ohm,simulated_bias
+fixed,-40,233.1,502.0,1.5400,1.8566,451.8,1.1712,fixed_vref
+fixed,0,273.1,502.0,1.5400,1.8189,451.8,1.4272,fixed_vref
+fixed,27,300.1,502.0,1.5400,1.7888,451.8,1.6000,fixed_vref
+fixed,85,358.1,502.0,1.5400,1.7133,451.8,1.9712,fixed_vref
+ptat,-40,233.1,389.9,1.5600,1.2857,350.9,1.1712,ptat_vref_temp_slope
+ptat,0,273.1,456.8,1.5400,1.8125,411.2,1.4272,ptat_vref_temp_slope
+ptat,27,300.1,502.0,1.5400,1.7888,451.8,1.6000,ptat_vref_temp_slope
+ptat,85,358.1,599.0,1.5400,1.7324,539.1,1.9712,ptat_vref_temp_slope

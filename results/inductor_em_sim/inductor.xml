@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ContinuousStructure CoordSystem="0">
+    <RectilinearGrid DeltaUnit="1e-06" CoordSystem="0">
+        <XLines Qty="53">-187,-177,-167,-157,-147,-137,-127,-117,-107,-97,-87,-77,-67,-57,-47,-37,-27,-17,-7,3,13,23,30,33,35,37.5,40,42.5,43,45,50,53,63,73,75,80,82.5,83,85,87.5,90,93,95,103,113,123,133,143,153,163,173,183,193</XLines>
+        <YLines Qty="46">-187,-177,-167,-157,-147,-137,-127,-117,-107,-97,-87,-77,-67,-57,-47,-37,-27,-17,-10,-7,-5,-2.5,0,2.5,3,5,10,13,23,33,43,53,63,73,83,93,103,113,123,133,143,153,163,173,183,193</YLines>
+        <ZLines Qty="42">-200,-190,-180,-170,-160,-150,-140,-130,-120,-110,-100,-90,-80,-70,-60,-50,-40.2641240879829,-30.5282481759658,-20.7923722639488,-13.6956647491375,-8.52270876593576,-4.75202023913735,-2.00347723736044,0,1.5,3,9.66666666666667,16.3333333333333,23,29.4181630740194,37.2787753826796,45.1393876913398,53,61.4648747433883,69.9297494867767,78.394624230165,86.8594989735533,92.9946680431402,97.4413138180011,100.664152247199,103,105</ZLines>
+    </RectilinearGrid>
+    <BackgroundMaterial Epsilon="1" Mue="1" Kappa="0" Sigma="0" />
+    <ParameterSet />
+    <Properties>
+        <Metal ID="0" Name="ind">
+            <FillColor R="103" G="198" B="105" a="255" />
+            <EdgeColor R="103" G="198" B="105" a="255" />
+            <Primitives>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="4.500000e+01" X2="0.000000e+00" />
+                    <Vertex X1="3.314563e+01" X2="3.314563e+01" />
+                    <Vertex X1="2.607456e+01" X2="2.607456e+01" />
+                    <Vertex X1="3.500000e+01" X2="0.000000e+00" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="3.314563e+01" X2="3.314563e+01" />
+                    <Vertex X1="2.985077e-15" X2="4.875000e+01" />
+                    <Vertex X1="2.372753e-15" X2="3.875000e+01" />
+                    <Vertex X1="2.607456e+01" X2="2.607456e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="2.985077e-15" X2="4.875000e+01" />
+                    <Vertex X1="-3.579728e+01" X2="3.579728e+01" />
+                    <Vertex X1="-2.872621e+01" X2="2.872621e+01" />
+                    <Vertex X1="2.372753e-15" X2="3.875000e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-3.579728e+01" X2="3.579728e+01" />
+                    <Vertex X1="-5.250000e+01" X2="6.429396e-15" />
+                    <Vertex X1="-4.250000e+01" X2="5.204749e-15" />
+                    <Vertex X1="-2.872621e+01" X2="2.872621e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-5.250000e+01" X2="6.429396e-15" />
+                    <Vertex X1="-3.844893e+01" X2="-3.844893e+01" />
+                    <Vertex X1="-3.137786e+01" X2="-3.137786e+01" />
+                    <Vertex X1="-4.250000e+01" X2="5.204749e-15" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-3.844893e+01" X2="-3.844893e+01" />
+                    <Vertex X1="-1.033296e-14" X2="-5.625000e+01" />
+                    <Vertex X1="-8.495987e-15" X2="-4.625000e+01" />
+                    <Vertex X1="-3.137786e+01" X2="-3.137786e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-1.033296e-14" X2="-5.625000e+01" />
+                    <Vertex X1="4.110058e+01" X2="-4.110058e+01" />
+                    <Vertex X1="3.402951e+01" X2="-3.402951e+01" />
+                    <Vertex X1="-8.495987e-15" X2="-4.625000e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="4.110058e+01" X2="-4.110058e+01" />
+                    <Vertex X1="6.000000e+01" X2="-1.469576e-14" />
+                    <Vertex X1="5.000000e+01" X2="-1.224647e-14" />
+                    <Vertex X1="3.402951e+01" X2="-3.402951e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="6.000000e+01" X2="-1.469576e-14" />
+                    <Vertex X1="4.375223e+01" X2="4.375223e+01" />
+                    <Vertex X1="3.668116e+01" X2="3.668116e+01" />
+                    <Vertex X1="5.000000e+01" X2="-1.224647e-14" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="4.375223e+01" X2="4.375223e+01" />
+                    <Vertex X1="1.951781e-14" X2="6.375000e+01" />
+                    <Vertex X1="1.645619e-14" X2="5.375000e+01" />
+                    <Vertex X1="3.668116e+01" X2="3.668116e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="1.951781e-14" X2="6.375000e+01" />
+                    <Vertex X1="-4.640388e+01" X2="4.640388e+01" />
+                    <Vertex X1="-3.933281e+01" X2="3.933281e+01" />
+                    <Vertex X1="1.645619e-14" X2="5.375000e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-4.640388e+01" X2="4.640388e+01" />
+                    <Vertex X1="-6.750000e+01" X2="2.479910e-14" />
+                    <Vertex X1="-5.750000e+01" X2="2.112516e-14" />
+                    <Vertex X1="-3.933281e+01" X2="3.933281e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-6.750000e+01" X2="2.479910e-14" />
+                    <Vertex X1="-4.905553e+01" X2="-4.905553e+01" />
+                    <Vertex X1="-4.198447e+01" X2="-4.198447e+01" />
+                    <Vertex X1="-5.750000e+01" X2="2.112516e-14" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-4.905553e+01" X2="-4.905553e+01" />
+                    <Vertex X1="-3.053963e-14" X2="-7.125000e+01" />
+                    <Vertex X1="-2.625337e-14" X2="-6.125000e+01" />
+                    <Vertex X1="-4.198447e+01" X2="-4.198447e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-3.053963e-14" X2="-7.125000e+01" />
+                    <Vertex X1="5.170718e+01" X2="-5.170718e+01" />
+                    <Vertex X1="4.463612e+01" X2="-4.463612e+01" />
+                    <Vertex X1="-2.625337e-14" X2="-6.125000e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="5.170718e+01" X2="-5.170718e+01" />
+                    <Vertex X1="7.500000e+01" X2="-3.673940e-14" />
+                    <Vertex X1="6.500000e+01" X2="-3.184082e-14" />
+                    <Vertex X1="4.463612e+01" X2="-4.463612e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="7.500000e+01" X2="-3.673940e-14" />
+                    <Vertex X1="5.435883e+01" X2="5.435883e+01" />
+                    <Vertex X1="4.728777e+01" X2="4.728777e+01" />
+                    <Vertex X1="6.500000e+01" X2="-3.184082e-14" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="5.435883e+01" X2="5.435883e+01" />
+                    <Vertex X1="4.339842e-14" X2="7.875000e+01" />
+                    <Vertex X1="3.788751e-14" X2="6.875000e+01" />
+                    <Vertex X1="4.728777e+01" X2="4.728777e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="4.339842e-14" X2="7.875000e+01" />
+                    <Vertex X1="-5.701048e+01" X2="5.701048e+01" />
+                    <Vertex X1="-4.993942e+01" X2="4.993942e+01" />
+                    <Vertex X1="3.788751e-14" X2="6.875000e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-5.701048e+01" X2="5.701048e+01" />
+                    <Vertex X1="-8.250000e+01" X2="5.051668e-14" />
+                    <Vertex X1="-7.250000e+01" X2="4.439345e-14" />
+                    <Vertex X1="-4.993942e+01" X2="4.993942e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-8.250000e+01" X2="5.051668e-14" />
+                    <Vertex X1="-5.966213e+01" X2="-5.966213e+01" />
+                    <Vertex X1="-5.259107e+01" X2="-5.259107e+01" />
+                    <Vertex X1="-7.250000e+01" X2="4.439345e-14" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-5.966213e+01" X2="-5.966213e+01" />
+                    <Vertex X1="-2.113050e-13" X2="-8.625000e+01" />
+                    <Vertex X1="-1.868058e-13" X2="-7.625000e+01" />
+                    <Vertex X1="-5.259107e+01" X2="-5.259107e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="-2.113050e-13" X2="-8.625000e+01" />
+                    <Vertex X1="6.231379e+01" X2="-6.231379e+01" />
+                    <Vertex X1="5.524272e+01" X2="-5.524272e+01" />
+                    <Vertex X1="-1.868058e-13" X2="-7.625000e+01" />
+                </LinPoly>
+                <LinPoly Priority="0" Elevation="0.000000e+00" NormDir="2" QtyVertices="4" Length="3.000000e+00">
+                    <Vertex X1="6.231379e+01" X2="-6.231379e+01" />
+                    <Vertex X1="9.000000e+01" X2="-6.613093e-14" />
+                    <Vertex X1="8.000000e+01" X2="-5.878305e-14" />
+                    <Vertex X1="5.524272e+01" X2="-5.524272e+01" />
+                </LinPoly>
+                <Box Priority="0">
+                    <P1 X="3.750000e+01" Y="-2.500000e+00" Z="0.000000e+00" />
+                    <P2 X="4.250000e+01" Y="2.500000e+00" Z="3.000000e+00" />
+                </Box>
+                <Box Priority="0">
+                    <P1 X="8.250000e+01" Y="-2.500000e+00" Z="0.000000e+00" />
+                    <P2 X="8.750000e+01" Y="2.500000e+00" Z="3.000000e+00" />
+                </Box>
+            </Primitives>
+        </Metal>
+        <Material ID="1" Name="sub" Isotropy="1">
+            <FillColor R="115" G="81" B="255" a="123" />
+            <EdgeColor R="115" G="81" B="255" a="123" />
+            <Primitives>
+                <Box Priority="0">
+                    <P1 X="-1.870000e+02" Y="-1.870000e+02" Z="-2.000000e+02" />
+                    <P2 X="1.870000e+02" Y="1.870000e+02" Z="0.000000e+00" />
+                </Box>
+            </Primitives>
+            <Property Epsilon="1.190000e+01,1.000000e+00,1.000000e+00" Mue="1.000000e+00,1.000000e+00,1.000000e+00" Kappa="2.000000e+00,0.000000e+00,0.000000e+00" Sigma="0.000000e+00,0.000000e+00,0.000000e+00" Density="0.000000e+00" />
+            <Weight Epsilon="1.000000e+00,1.000000e+00,1.000000e+00" Mue="1.000000e+00,1.000000e+00,1.000000e+00" Kappa="1.000000e+00,1.000000e+00,1.000000e+00" Sigma="1.000000e+00,1.000000e+00,1.000000e+00" Density="1.000000e+00" />
+        </Material>
+        <LumpedElement ID="2" Name="port_resist_1" Direction="2" Caps="1" R="5.000000e+01" C="nan" L="nan" LEtype="0.000000e+00">
+            <FillColor R="74" G="236" B="41" a="255" />
+            <EdgeColor R="74" G="236" B="41" a="255" />
+            <Primitives>
+                <Box Priority="100">
+                    <P1 X="3.750000e+01" Y="-2.500000e+00" Z="3.000000e+00" />
+                    <P2 X="4.250000e+01" Y="2.500000e+00" Z="2.300000e+01" />
+                </Box>
+            </Primitives>
+        </LumpedElement>
+        <Excitation ID="3" Name="port_excite_1" Number="0" Enabled="1" Frequency="0.000000e+00" Delay="0.000000e+00" Type="0" Excite="0.000000e+00,0.000000e+00,-1.000000e+00" PropDir="0.000000e+00,0.000000e+00,0.000000e+00">
+            <FillColor R="205" G="186" B="171" a="255" />
+            <EdgeColor R="205" G="186" B="171" a="255" />
+            <Primitives>
+                <Box Priority="100">
+                    <P1 X="3.750000e+01" Y="-2.500000e+00" Z="3.000000e+00" />
+                    <P2 X="4.250000e+01" Y="2.500000e+00" Z="2.300000e+01" />
+                </Box>
+            </Primitives>
+            <Weight X="1.000000e+00" Y="1.000000e+00" Z="1.000000e+00" />
+        </Excitation>
+        <ProbeBox ID="4" Name="port_ut_1" Visible="0" Number="0" Type="0" Weight="-1" NormDir="-1" StartTime="0" StopTime="0">
+            <FillColor R="242" G="251" B="227" a="255" />
+            <EdgeColor R="242" G="251" B="227" a="255" />
+            <Primitives>
+                <Box Priority="0">
+                    <P1 X="4.000000e+01" Y="0.000000e+00" Z="3.000000e+00" />
+                    <P2 X="4.000000e+01" Y="0.000000e+00" Z="2.300000e+01" />
+                </Box>
+            </Primitives>
+        </ProbeBox>
+        <ProbeBox ID="5" Name="port_it_1" Visible="0" Number="0" NormDir="2" Type="1" Weight="1" StartTime="0" StopTime="0">
+            <FillColor R="70" G="124" B="194" a="255" />
+            <EdgeColor R="70" G="124" B="194" a="255" />
+            <Primitives>
+                <Box Priority="0">
+                    <P1 X="3.750000e+01" Y="-2.500000e+00" Z="1.300000e+01" />
+                    <P2 X="4.250000e+01" Y="2.500000e+00" Z="1.300000e+01" />
+                </Box>
+            </Primitives>
+        </ProbeBox>
+        <LumpedElement ID="6" Name="port_resist_2" Direction="2" Caps="1" R="5.000000e+01" C="nan" L="nan" LEtype="0.000000e+00">
+            <FillColor R="84" G="248" B="27" a="255" />
+            <EdgeColor R="84" G="248" B="27" a="255" />
+            <Primitives>
+                <Box Priority="100">
+                    <P1 X="8.250000e+01" Y="-2.500000e+00" Z="3.000000e+00" />
+                    <P2 X="8.750000e+01" Y="2.500000e+00" Z="2.300000e+01" />
+                </Box>
+            </Primitives>
+        </LumpedElement>
+        <ProbeBox ID="7" Name="port_ut_2" Visible="0" Number="0" Type="0" Weight="-1" NormDir="-1" StartTime="0" StopTime="0">
+            <FillColor R="232" G="231" B="141" a="255" />
+            <EdgeColor R="232" G="231" B="141" a="255" />
+            <Primitives>
+                <Box Priority="0">
+                    <P1 X="8.500000e+01" Y="0.000000e+00" Z="3.000000e+00" />
+                    <P2 X="8.500000e+01" Y="0.000000e+00" Z="2.300000e+01" />
+                </Box>
+            </Primitives>
+        </ProbeBox>
+        <ProbeBox ID="8" Name="port_it_2" Visible="0" Number="0" NormDir="2" Type="1" Weight="1" StartTime="0" StopTime="0">
+            <FillColor R="118" G="90" B="46" a="255" />
+            <EdgeColor R="118" G="90" B="46" a="255" />
+            <Primitives>
+                <Box Priority="0">
+                    <P1 X="8.250000e+01" Y="-2.500000e+00" Z="1.300000e+01" />
+                    <P2 X="8.750000e+01" Y="2.500000e+00" Z="1.300000e+01" />
+                </Box>
+            </Primitives>
+        </ProbeBox>
+    </Properties>
+</ContinuousStructure>

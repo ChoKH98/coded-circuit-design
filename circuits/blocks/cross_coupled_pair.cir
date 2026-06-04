@@ -1,0 +1,33 @@
+* Cross-Coupled CMOS Negative-gm Cell
+* Ref: Abbasizadeh 2018, Fig.2
+*
+* Architecture: complementary CMOS cross-coupled
+*   - PMOS pair (M3,M4): source=vdd, cross-connected gates
+*   - NMOS pair (M1,M2): source=vs (tail), cross-connected gates
+*   - gm_total = gm_n + gm_p  (constructive addition -> halves power vs NMOS-only)
+*
+* Sizing rationale (IHP SG13G2 130nm, subthreshold):
+*   - In subthreshold: gm = Id/(n*Vt), independent of W
+*   - W controls: Vgs operating point, layout area, gate capacitance
+*   - L=130nm (minimum): maximizes gm/Id at given Id
+*   - W=40um: keeps Vgs well below Vth=0.41V (subthreshold) at Id=240uA
+*     Vgs_approx = Vth + n*Vt*ln(Id/I0*(L/W)) -> verified by NMOS DC sim
+*
+* Note (paper Section III-D):
+*   Negative gm-cell placed at END of capacitor banks (not inductor end)
+*   -> reduces parasitic inductance from routing when switches are OFF
+*   -> maintains Q-factor of negative gm-cell
+
+.subckt cross_coupled_pair outp outn vdd vs
+
+* PMOS cross-coupled pair
+* drain=outp/outn, gate=outn/outp (cross), source=vdd, bulk=vdd
+XM3 outp outn vdd vdd sg13_lv_pmos W=40u L=130n
+XM4 outn outp vdd vdd sg13_lv_pmos W=40u L=130n
+
+* NMOS cross-coupled pair
+* drain=outp/outn, gate=outn/outp (cross), source=vs, bulk=0
+XM1 outp outn vs 0 sg13_lv_nmos W=40u L=130n
+XM2 outn outp vs 0 sg13_lv_nmos W=40u L=130n
+
+.ends cross_coupled_pair

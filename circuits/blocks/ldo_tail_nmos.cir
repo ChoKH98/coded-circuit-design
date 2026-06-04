@@ -1,0 +1,64 @@
+* LDO-Controlled NMOS Tail Current Source — Simplified Voltage-Mode
+* IHP SG13G2 130nm SiGe BiCMOS
+*
+* Works with NMOS-only cross-coupled pair where vs ≈ +0.5V (positive)
+*
+* Simplified architecture (voltage-mode, robust convergence):
+*   Target: V(vs) = V_ref ≈ 0.52V
+*   OTA error = V_ref - V(vs)
+*     > 0 (vs too low)  → V_ctrl rises → NMOS M_tail Vgs rises → I_tail rises → vs rises ✓
+*     < 0 (vs too high) → V_ctrl falls → NMOS M_tail Vgs falls → I_tail falls → vs falls ✓
+*
+*   V_ref is programmable via code:
+*     V_ref_prog = V_BASE - Σ(MSB bits × V_UNIT_MSB) - Σ(LSB bits × V_UNIT_LSB)
+*     → higher cap code → lower source voltage → higher NMOS overdrive/current ✓
+*
+*   V_BASE = 0.470V (minimum capacitance, previously verified bias point)
+*   V_UNIT_MSB = 4.0mV × bit_weight
+*   V_UNIT_LSB = 2.5mV × bit_weight
+*
+* OTA: Behavioral G-C integrator (tau=20ns, stable within 200ns window)
+* M_tail (NMOS W=200u): drain=vs, source=GND → Vds=+0.52V >> Vdsat ✓
+*
+* Ports: vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+.subckt ldo_tail_nmos vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+* ── Programmable V_ref generation ────────────────────────────────────────
+* V_ref = 0.300 + MSB_bits×9.68mV_unit + LSB_bits×4.5mV_unit
+* Implemented as a weighted sum using ideal voltage sources + behavioral source
+*
+* Bit weight voltages (behavioral):
+* Each bit contributes weight × unit_voltage to V_ref
+
+* V_ref behavioral computation:
+* msb weights: bit4=16, bit3=8, bit2=4, bit1=2, bit0=1 → V_step_msb=4.0mV
+* lsb weights: bit4=16, bit3=8, bit2=4, bit1=2, bit0=1 → V_step_lsb=2.5mV
+* V_ref is code-driven: 0.470V at code 0, decreasing to 0.2685V at code 31/31.
+* Vgs_M1 = 0.9 - 0.55 = 0.35V < Vthn=0.41V → subthreshold ✓
+* Expected I_tail ≈ 300uA (150uA per transistor at Vgs=0.35V W=40u)
+* → gm_total = 300uA/(1.3×26mV) = 8.9mS >> gm_min=1.03mS → loop gain 8.6× ✓
+B_vref  n_vref  0  V = {0.470 - 0.00400*(16*V(msb4) + 8*V(msb3) + 4*V(msb2) + 2*V(msb1) + V(msb0)) - 0.00250*(16*V(lsb4) + 8*V(lsb3) + 4*V(lsb2) + 2*V(lsb1) + V(lsb0))}
+
+* At MSB=00000,LSB=00000: V_ref = 0.470V
+* At MSB=11111,LSB=11111: V_ref = 0.470 - 31×4.0m - 31×2.5m = 0.2685V
+
+* ── Behavioral OTA: G-C integrator ──────────────────────────────────────
+* M_tail is a SINK (drain=vs, source=GND): more I_M_tail → vs FALLS.
+* Therefore negative feedback requires INVERTED sign:
+*   vs < V_ref → error negative → v_ctrl FALLS → I_M_tail DECREASES → vs RISES ✓
+*   vs > V_ref → error positive → v_ctrl RISES  → I_M_tail INCREASES → vs FALLS ✓
+G_ota  0  v_ctrl  value={5e-5 * (V(vs,0) - V(n_vref,0))}
+C_int  v_ctrl  0  1p
+* tau = C/G = 1pF / 50uS = 20ns
+
+* V_ctrl clamp: keep in valid range [0.1, VDD-0.1]
+* (handled naturally by transistor saturation limits)
+
+* ── NMOS pass transistor M_tail ──────────────────────────────────────────
+* drain=vs (≈+0.52V), gate=v_ctrl, source=GND, bulk=GND
+* Vds = +0.52V >> Vdsat ≈ 0.08V → saturation → current controlled by gate ✓
+* I_tail = f(V_ctrl), regulated to maintain V(vs) = V_ref
+XM_tail  vs  v_ctrl  0  0  sg13_lv_nmos  W=200u  L=500n
+
+.ends ldo_tail_nmos

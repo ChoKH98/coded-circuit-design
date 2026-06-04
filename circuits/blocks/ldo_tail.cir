@@ -1,0 +1,87 @@
+* LDO-Controlled Tail Current Source
+* IHP SG13G2 130nm SiGe BiCMOS
+*
+* Current-mode LDO: regulates I_tail = 5 × I_ref
+*
+*   Step 1 — I_ref DAC (1/5 scale PMOS mirrors at VDD, safe node):
+*     I_ref = I_BASE + MSB_sum + LSB_sum
+*     Base   = 96uA/5 = 19.2uA  (W_base = 5.5u)
+*     MSB unit = 9.6uA/5 = 1.92uA per unit weight
+*     LSB unit = 4.5uA/5 = 0.90uA per unit weight
+*     → at MSB=31,LSB=24: I_ref = 19.2+29.76+10.8 = 59.76uA
+*
+*   Step 2 — Current sense (M_sense W=40u, 1:5 ratio to M_tail W=200u):
+*     I_sense = I_tail / 5
+*
+*   Step 3 — I→V conversion (matched R=1kΩ to GND):
+*     V_ref_ota = I_ref  × 1kΩ  (rises when I_ref  increases)
+*     V_sns_ota = I_sense× 1kΩ  (rises when I_sense increases)
+*
+*   Step 4 — Behavioral OTA (G-C integrator, 10ns tau):
+*     If I_sense < I_ref → V_sns < V_ref → V_ctrl falls → M_tail Vsg rises → I_tail rises ✓
+*     If I_sense > I_ref → V_sns > V_ref → V_ctrl rises → M_tail Vsg falls → I_tail falls ✓
+*
+*   Step 5 — M_tail (W=200u, L=500n): VDD→vs pass transistor
+*     vs → ~+80mV (stable positive, no vs<0 problem)
+*     NMOS M1/M2 Vgs = V(outp)-0.08 ≈ 0.37V < 0.41V → subthreshold ✓
+*
+* Ports: vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+.subckt ldo_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+* ── PTAT reference: p_bias (PMOS gate) ∝ T ──────────────────────────────
+X_ptat  vdd  nc_unused  p_bias  ptat_ref
+XM_pref  p_bias  p_bias  vdd  vdd  sg13_lv_pmos  W=2u  L=130n
+
+* ── I_ref DAC (1/5 scale PMOS mirrors → n_iref node) ────────────────────
+* Base: W=5.5u → 19.2uA
+XM_base   n_iref  p_bias  vdd  vdd  sg13_lv_pmos  W=5.5u  L=130n
+
+* MSB (unit = 1.92uA → W=0.55u per unit weight)
+SW_msb4  n_iref  ndm4  msb4  0  SW_IDEAL
+XM_msb4  ndm4  p_bias  vdd  vdd  sg13_lv_pmos  W=8.8u  L=130n
+SW_msb3  n_iref  ndm3  msb3  0  SW_IDEAL
+XM_msb3  ndm3  p_bias  vdd  vdd  sg13_lv_pmos  W=4.4u  L=130n
+SW_msb2  n_iref  ndm2  msb2  0  SW_IDEAL
+XM_msb2  ndm2  p_bias  vdd  vdd  sg13_lv_pmos  W=2.2u  L=130n
+SW_msb1  n_iref  ndm1  msb1  0  SW_IDEAL
+XM_msb1  ndm1  p_bias  vdd  vdd  sg13_lv_pmos  W=1.1u  L=130n
+SW_msb0  n_iref  ndm0  msb0  0  SW_IDEAL
+XM_msb0  ndm0  p_bias  vdd  vdd  sg13_lv_pmos  W=0.55u  L=130n
+
+* LSB (unit = 0.90uA → W=0.26u per unit weight)
+SW_lsb4  n_iref  ndl4  lsb4  0  SW_IDEAL
+XM_lsb4  ndl4  p_bias  vdd  vdd  sg13_lv_pmos  W=4.1u  L=130n
+SW_lsb3  n_iref  ndl3  lsb3  0  SW_IDEAL
+XM_lsb3  ndl3  p_bias  vdd  vdd  sg13_lv_pmos  W=2.1u  L=130n
+SW_lsb2  n_iref  ndl2  lsb2  0  SW_IDEAL
+XM_lsb2  ndl2  p_bias  vdd  vdd  sg13_lv_pmos  W=1.03u  L=130n
+SW_lsb1  n_iref  ndl1  lsb1  0  SW_IDEAL
+XM_lsb1  ndl1  p_bias  vdd  vdd  sg13_lv_pmos  W=0.51u  L=130n
+SW_lsb0  n_iref  ndl0  lsb0  0  SW_IDEAL
+XM_lsb0  ndl0  p_bias  vdd  vdd  sg13_lv_pmos  W=0.26u  L=130n
+
+* ── I→V conversion (R=1kΩ, both sides matched) ─────────────────────────
+R_ref  n_iref  0  1k  tc1=0  tc2=0
+R_sns  n_isns  0  1k  tc1=0  tc2=0
+
+* ── Current sense: M_sense (W=40u, same gate as M_tail, 1:5 ratio) ──────
+XM_sense  n_isns  v_ctrl  vdd  vdd  sg13_lv_pmos  W=40u  L=500n
+
+* ── Behavioral OTA: G-C integrator (10ns time constant) ─────────────────
+* Error = V(n_iref) - V(n_isns)
+*   positive error → I_ref > I_sense → I_tail too small → need to drive V_ctrl DOWN
+*   (PMOS: lower V_ctrl → higher Vsg → more current)
+* G_ota: sources current into C_int when error is positive → V_ctrl falls ✓
+G_ota  v_ctrl  vdd  value={1e-4 * (V(n_iref) - V(n_isns))}
+C_int  v_ctrl  vdd  1p
+* tau = C_int / G_ota_gain = 1pF / 100uS = 10ns (fast settling in 500ns sim)
+
+* Clamp: prevent V_ctrl from exceeding VDD or going below 0
+* (ngspice will handle naturally through transistor saturation)
+
+* ── PMOS pass transistor M_tail ─────────────────────────────────────────
+* Sources I_tail = 5 × I_ref into vs
+XM_tail  vs  v_ctrl  vdd  vdd  sg13_lv_pmos  W=200u  L=500n
+
+.ends ldo_tail

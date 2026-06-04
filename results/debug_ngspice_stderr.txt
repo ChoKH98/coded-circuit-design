@@ -1,0 +1,8 @@
+Error on line 42 or its substitute:
+  b.x_tail.b_vref x_tail.n_vref 0 v=   3.0000000000e-01   9.6800000000e-03 * (   1.6000000000e+01 * v(msb4) +   8.0000000000e+00 * v(msb3) +   4.0000000000e+00 * v(msb2) +   2.0000000000e+00 * v(msb1) + v(msb0) )   4.5000000000e-03 * (   1.6000000000e+01 * v(lsb4) +   8.0000000000e+00 * v(lsb3) +   4.0000000000e+00 * v(lsb2) +   2.0000000000e+00 * v(lsb1) + v(lsb0) )
+  unknown parameter (9.6800000000e-03) 
+    Simulation interrupted due to error!
+
+Error: incomplete or empty netlist
+       or no ".plot", ".print", or ".fourier" lines in batch mode;
+no simulations run!

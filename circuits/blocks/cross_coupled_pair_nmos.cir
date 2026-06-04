@@ -1,0 +1,26 @@
+* NMOS-Only Cross-Coupled Pair
+* IHP SG13G2 130nm — Phase 3 Final
+*
+* Topology change from CMOS complementary:
+*   CMOS (prev): NMOS(source=vs) + PMOS(source=VDD) → vs = -0.17V (problem)
+*   NMOS-only:   NMOS(source=vs) only               → vs = +0.5V  (LDO tail works)
+*
+* DC bias: RFC (R_rfc in top-level) from VDD to mid-tap of LC tank
+*   V(outp/outn)_DC ≈ VDD = 0.9V
+*   V(vs)_DC = V(outp) - Vgs_NMOS = 0.9 - 0.38 ≈ 0.52V (positive!)
+*
+* gm note: gm_total = gm_n only (no PMOS contribution)
+*   Need ~2× current vs CMOS pair for same loop gain
+*   Compensated by L=4nH (larger than CMOS L=2nH)
+*
+* Ports: outp outn vs
+
+.subckt cross_coupled_pair_nmos outp outn vs
+
+* NMOS M1: drain=outp, gate=outn (cross), source=vs, bulk=0
+XM1  outp  outn  vs  0  sg13_lv_nmos  W=40u  L=130n
+
+* NMOS M2: drain=outn, gate=outp (cross), source=vs, bulk=0
+XM2  outn  outp  vs  0  sg13_lv_nmos  W=40u  L=130n
+
+.ends cross_coupled_pair_nmos

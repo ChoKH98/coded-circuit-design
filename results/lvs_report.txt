@@ -1,0 +1,13 @@
+LVS report
+Command: python3 /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/lvs/run_lvs.py --layout=/home/whqkrel/rfic_project/layouts/lc_dco_nmos.gds --netlist=/home/whqkrel/rfic_project/circuits/lc_dco_nmos_top.cir --run_dir=/home/whqkrel/rfic_project/results/lvs_lc_dco_nmos --topcell=LC_DCO_NMOS --run_mode=flat --spice_comments --no_simplify --ignore_top_ports_mismatch
+Return code: 1
+Run directory: /home/whqkrel/rfic_project/results/lvs_lc_dco_nmos
+Status: blocked - PDK LVS Python wrapper cannot import klayout.db in this environment; generated layout is also a placement/routing placeholder rather than PCell-level MOS/cap/inductor geometry.
+
+Output tail:
+
+Traceback (most recent call last):
+  File "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/lvs/run_lvs.py", line 23, in <module>
+    import klayout.db
+ModuleNotFoundError: No module named 'klayout'
+

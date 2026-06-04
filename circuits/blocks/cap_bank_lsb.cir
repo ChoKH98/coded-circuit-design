@@ -1,0 +1,55 @@
+* LSB Capacitor Bank — Fine Tuning (5-bit, ideal switches)
+* Ref: Abbasizadeh 2018, Fig.2
+*
+* Same ideal switch structure as MSB (same Ron issue applies)
+* C_unit = 44fF after 2.0nH retune → total when all ON: 31×44fF = 1.36pF
+* Frequency shift: after MSB maxed (2.67GHz) → 2.24GHz
+
+.subckt cap_bank_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0
+
+* -- Bit 0  (weight=1, C=44fF)
+C_p0  outp  sp0  44f
+S_p0  sp0   0    lsb0  0  SW_IDEAL
+R_p0  sp0   0    1Meg
+
+C_n0  outn  sn0  44f
+S_n0  sn0   0    lsb0  0  SW_IDEAL
+R_n0  sn0   0    1Meg
+
+* -- Bit 1  (weight=2, C=88fF)
+C_p1  outp  sp1  88f
+S_p1  sp1   0    lsb1  0  SW_IDEAL
+R_p1  sp1   0    1Meg
+
+C_n1  outn  sn1  88f
+S_n1  sn1   0    lsb1  0  SW_IDEAL
+R_n1  sn1   0    1Meg
+
+* -- Bit 2  (weight=4, C=176fF)
+C_p2  outp  sp2  176f
+S_p2  sp2   0    lsb2  0  SW_IDEAL
+R_p2  sp2   0    1Meg
+
+C_n2  outn  sn2  176f
+S_n2  sn2   0    lsb2  0  SW_IDEAL
+R_n2  sn2   0    1Meg
+
+* -- Bit 3  (weight=8, C=352fF)
+C_p3  outp  sp3  352f
+S_p3  sp3   0    lsb3  0  SW_IDEAL
+R_p3  sp3   0    1Meg
+
+C_n3  outn  sn3  352f
+S_n3  sn3   0    lsb3  0  SW_IDEAL
+R_n3  sn3   0    1Meg
+
+* -- Bit 4  (weight=16, C=704fF)
+C_p4  outp  sp4  704f
+S_p4  sp4   0    lsb4  0  SW_IDEAL
+R_p4  sp4   0    1Meg
+
+C_n4  outn  sn4  704f
+S_n4  sn4   0    lsb4  0  SW_IDEAL
+R_n4  sn4   0    1Meg
+
+.ends cap_bank_lsb

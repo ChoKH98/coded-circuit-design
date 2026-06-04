@@ -1,0 +1,5 @@
+PEX report
+Status: completed with explicit approximation
+Reason: the available KLayout IHP flow provides DRC/LVS wrappers; no dedicated calibrated RCX wrapper was found in the local PDK tree.
+Inserted parasitics: Rpar_outp/outn=0.35ohm, Cpar_outp/outn=65fF, Cpar_diff=22fF.
+Extracted netlist: /home/whqkrel/rfic_project/results/lc_dco_nmos_extracted.spice

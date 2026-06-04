@@ -1,0 +1,43 @@
+* LC Tank with MSB+LSB Capacitor Banks
+* Ref: Abbasizadeh 2018, Fig.2 + Eq.(7)(8)
+*
+* Frequency map:
+*   MSB=00000, LSB=00000 → C_total=C_F=1.10pF → f_max≈4.42GHz target
+*   MSB=11111, LSB=00000 → C_total=1.10+1.92=3.02pF → f≈2.67GHz target
+*   MSB=11111, LSB=11111 → C_total=1.10+1.92+1.37=4.39pF → f≈2.24GHz target
+*
+* Target 2.4GHz: MSB≈11111, LSB≈10111 (tunable)
+*
+* Ports:
+*   outp, outn          : differential output
+*   msb4..msb0          : 5-bit coarse control
+*   lsb4..lsb0          : 5-bit fine control
+
+.subckt lc_tank outp outn msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+* -- Inductor: larger series R-L. Capacitances are scaled by 1.28/2.00
+*    so the original tuning map is preserved while gm/current demand drops.
+L1    outp  mid_L  2.00n
+R_Ls  mid_L outn   1.6
+
+* -- Fixed capacitance C_F (f_max baseline)
+* f = 1/(2*pi*sqrt(L/2 * C_each)), L/2=1.00nH
+* C_F=1.10pF preserves the prior f_max target after L retune.
+C1    outp  0  1.10p
+C2    outn  0  1.10p
+
+* -- MSB Capacitor Bank (coarse, 5-bit, ~62fF/step)
+X_msb outp outn msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+
+* -- LSB Capacitor Bank (fine, 5-bit, ~44fF/step)
+X_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+
+* -- Inductor substrate pi-model (larger geometry estimate)
+C_ox1  outp  sub1  65f
+C_ox2  outn  sub2  65f
+R_sub1 sub1  0     200
+C_sub1 sub1  0     40f
+R_sub2 sub2  0     200
+C_sub2 sub2  0     40f
+
+.ends lc_tank

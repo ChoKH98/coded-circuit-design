@@ -1,0 +1,39 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# OMC / session data
+.omc/
+.omx/
+.claude/
+
+# Large simulation temporary files
+results/_tmp_*.cir
+results/_sweep_tmp_*.cir
+results/inductor_sweep_netlists/
+results/lvs_run/
+results/lvs_run_clean/
+results/lvs_run_netonly/
+results/drc_run/
+results/drc_lc_dco_nmos/
+results/drc_fixed/
+results/drc_final/
+results/drc_final2/
+results/drc_final3/
+results/lvs_fixed/
+results/lvs_core/
+results/lvs_core2/
+results/lc_dco_nmos_msb*.csv
+results/il_pll*.csv
+results/postlayout*.csv
+results/sweep_*.csv
+
+# PDK (stays in ~/tools, not the project)
+tools/
+
+# OS
+.DS_Store
+Thumbs.db

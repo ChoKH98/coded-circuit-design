@@ -1,0 +1,46 @@
+Magic DRC/extraction fallback report
+Command: magic -dnull -noconsole -T /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech /home/whqkrel/rfic_project/results/magic_lc_dco_nmos/magic_drc_extract.tcl
+Return code: -11
+Status: blocked
+Run directory: /home/whqkrel/rfic_project/results/magic_lc_dco_nmos
+Extracted netlist: /home/whqkrel/rfic_project/results/magic_lc_dco_nmos/lc_dco_nmos_magic.spice
+
+Output tail:
+subcircuit msubcircuit csubcircuit
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6268: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6269: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6270: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6271: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6331: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6332: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6334: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6335: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6338: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6339: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech: line 6340: section extract:
+	Illegal keyword.  Legal keywords are:
+	 areacap contact cscale defaultareacap defaultoverlap defaultperimeter defaultsideoverlap defaultsidewall device fet fetresist height antenna model tiedown lambda overlap perimc planeorder noplaneordering resist rscale sidehalo sideoverlap sidewall step style substrate units variants
+The following sections of /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech contained errors:
+    version
+Error loading technology "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/magic/ihp-sg13g2.tech"
+

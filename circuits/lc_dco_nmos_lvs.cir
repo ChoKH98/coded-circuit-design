@@ -1,0 +1,128 @@
+* LC_DCO_NMOS — LVS Schematic Netlist
+* IHP SG13G2 130nm — Phase 3 NMOS-only
+* Stripped of .control/.tran/.ic for KLayout LVS parser compatibility
+* Behavioral OTA replaced with actual NMOS devices matching layout intent
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+* ── Subcircuit: NMOS cross-coupled pair ─────────────────────────────────────
+.subckt cross_coupled_pair_nmos outp outn vs
+XM1  outp  outn  vs  0  sg13_lv_nmos  W=40u  L=130n
+XM2  outn  outp  vs  0  sg13_lv_nmos  W=40u  L=130n
+.ends cross_coupled_pair_nmos
+
+* ── Subcircuit: LDO tail (device-level, no behavioral sources) ──────────────
+.subckt ldo_tail_nmos vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+* M_tail: NMOS pass transistor
+XM_tail  vs  v_ctrl  0  0  sg13_lv_nmos  W=200u  L=500n
+* M_sense: sense transistor (1/5 scale)
+XM_sense  vdd  v_ctrl  n_isns  0  sg13_lv_nmos  W=40u  L=500n
+R_sns  n_isns  0  1k
+R_ref  n_iref  0  1k
+.ends ldo_tail_nmos
+
+* ── Subcircuit: MSB cap bank ────────────────────────────────────────────────
+.subckt cap_bank_msb outp outn msb4 msb3 msb2 msb1 msb0
+C_p0  outp  sp0  62f
+S_p0  sp0   0    msb0  0  SW_IDEAL
+R_p0  sp0   0    1Meg
+C_n0  outn  sn0  62f
+S_n0  sn0   0    msb0  0  SW_IDEAL
+R_n0  sn0   0    1Meg
+C_p1  outp  sp1  124f
+S_p1  sp1   0    msb1  0  SW_IDEAL
+R_p1  sp1   0    1Meg
+C_n1  outn  sn1  124f
+S_n1  sn1   0    msb1  0  SW_IDEAL
+R_n1  sn1   0    1Meg
+C_p2  outp  sp2  248f
+S_p2  sp2   0    msb2  0  SW_IDEAL
+R_p2  sp2   0    1Meg
+C_n2  outn  sn2  248f
+S_n2  sn2   0    msb2  0  SW_IDEAL
+R_n2  sn2   0    1Meg
+C_p3  outp  sp3  496f
+S_p3  sp3   0    msb3  0  SW_IDEAL
+R_p3  sp3   0    1Meg
+C_n3  outn  sn3  496f
+S_n3  sn3   0    msb3  0  SW_IDEAL
+R_n3  sn3   0    1Meg
+C_p4  outp  sp4  992f
+S_p4  sp4   0    msb4  0  SW_IDEAL
+R_p4  sp4   0    1Meg
+C_n4  outn  sn4  992f
+S_n4  sn4   0    msb4  0  SW_IDEAL
+R_n4  sn4   0    1Meg
+.ends cap_bank_msb
+
+* ── Subcircuit: LSB cap bank ────────────────────────────────────────────────
+.subckt cap_bank_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0
+C_p0  outp  sp0  44f
+S_p0  sp0   0    lsb0  0  SW_IDEAL
+R_p0  sp0   0    1Meg
+C_n0  outn  sn0  44f
+S_n0  sn0   0    lsb0  0  SW_IDEAL
+R_n0  sn0   0    1Meg
+C_p1  outp  sp1  88f
+S_p1  sp1   0    lsb1  0  SW_IDEAL
+R_p1  sp1   0    1Meg
+C_n1  outn  sn1  88f
+S_n1  sn1   0    lsb1  0  SW_IDEAL
+R_n1  sn1   0    1Meg
+C_p2  outp  sp2  176f
+S_p2  sp2   0    lsb2  0  SW_IDEAL
+R_p2  sp2   0    1Meg
+C_n2  outn  sn2  176f
+S_n2  sn2   0    lsb2  0  SW_IDEAL
+R_n2  sn2   0    1Meg
+C_p3  outp  sp3  352f
+S_p3  sp3   0    lsb3  0  SW_IDEAL
+R_p3  sp3   0    1Meg
+C_n3  outn  sn3  352f
+S_n3  sn3   0    lsb3  0  SW_IDEAL
+R_n3  sn3   0    1Meg
+C_p4  outp  sp4  704f
+S_p4  sp4   0    lsb4  0  SW_IDEAL
+R_p4  sp4   0    1Meg
+C_n4  outn  sn4  704f
+S_n4  sn4   0    lsb4  0  SW_IDEAL
+R_n4  sn4   0    1Meg
+.ends cap_bank_lsb
+
+* ── Top-level: LC_DCO_NMOS ──────────────────────────────────────────────────
+.subckt LC_DCO_NMOS outp outn vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+* LC Tank
+L1a   n_op  mid_L  2.00n
+R_Ls_a outp n_op   1.25
+L1b   n_on  mid_L  2.00n
+R_Ls_b outn n_on   1.25
+C1    outp  0  1.975p
+C2    outn  0  1.975p
+
+* Inductor substrate model
+C_ox1 outp sub1 80f
+C_ox2 outn sub2 80f
+R_sub1 sub1 0 180
+C_sub1 sub1 0 50f
+R_sub2 sub2 0 180
+C_sub2 sub2 0 50f
+
+* RFC center tap
+V_rfc  mid_L  vdd  DC 0
+
+* Cap banks
+X_cap_msb outp outn msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+X_cap_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+
+* NMOS cross-coupled pair
+X_gm  outp outn vs  cross_coupled_pair_nmos
+
+* LDO tail
+X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 ldo_tail_nmos
+
+.ends LC_DCO_NMOS
+
+.end

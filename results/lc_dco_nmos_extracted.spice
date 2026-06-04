@@ -1,0 +1,127 @@
+* NMOS-Only Cross-Coupled LC-DCO + LDO Tail
+* IHP SG13G2 130nm SiGe BiCMOS — Phase 3 Final (NMOS topology)
+*
+* Topology:
+*   - NMOS-only cross-coupled pair (M1/M2, source=vs)
+*   - L_rfc (200nH) + R_dc (10Ω): DC bias path from VDD to tank center
+*     → V(outp/outn)_DC ≈ VDD = 0.9V (L_rfc is DC short, hi-Z at 2.4GHz)
+*     → X_rfc @ 2.4GHz = 3.0kΩ >> Rp=970Ω → acceptable loading
+*   - LDO NMOS tail: regulates V(vs) = V_ref (programmable)
+*     → vs ≈ +0.3~0.7V → NMOS M_tail Vds > 0 → saturation ✓
+*
+* L=4nH tank: compensates halved gm from removing PMOS pair
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+.include '/home/whqkrel/rfic_project/circuits/blocks/cross_coupled_pair_nmos.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_msb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_lsb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ptat_ref.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ldo_tail_nmos.cir'
+
+* ── Supply ────────────────────────────────────────────────────────────────
+VDD vdd 0 DC 0.9
+
+* ── MSB=31, LSB=24 → 2.4GHz target point ────────────────────────────────
+* MSB=0,LSB=0: minimal cap bank → f_max with C_F=2.19pF ≈ 2.4GHz
+VMSB4 msb4 0 DC 0
+VMSB3 msb3 0 DC 0
+VMSB2 msb2 0 DC 0
+VMSB1 msb1 0 DC 0
+VMSB0 msb0 0 DC 0
+VLSB4 lsb4 0 DC 0
+VLSB3 lsb3 0 DC 0
+VLSB2 lsb2 0 DC 0
+VLSB1 lsb1 0 DC 0
+VLSB0 lsb0 0 DC 0
+
+* ── LC Tank (L=4nH total, C_F=2.19pF each, symmetric differential) ────────
+* Differential inductor split symmetrically: L/2=2nH each side, Rs/2=1.25Ω each
+* With mid_L = VDD (AC gnd via V_rfc): outp sees 2nH||1.25Ω, outn sees 2nH||1.25Ω ✓
+* f = 1/(2π√(L/2 × C_F)) = 1/(2π√(2nH × 2.19pF)) = 2.40 GHz ✓
+L1a   n_op  mid_L  2.00n
+R_Ls_a outp n_op   1.25
+L1b   n_on  mid_L  2.00n
+R_Ls_b outn n_on   1.25
+* C_F reduced from 2.19p to 1.975p to compensate MOSFET parasitics (~215fF)
+C1    outp  0  1.975p
+C2    outn  0  1.975p
+
+* Inductor substrate pi-model (scaled for L=4nH geometry)
+C_ox1 outp sub1 80f
+C_ox2 outn sub2 80f
+R_sub1 sub1 0 180
+C_sub1 sub1 0 50f
+R_sub2 sub2 0 180
+C_sub2 sub2 0 50f
+
+* ── Programmable capacitor banks ─────────────────────────────────────────
+* MSB/LSB banks are differential, binary weighted, and driven by the code
+* sources above. The fixed C1/C2 terms keep the previously verified 2.4027GHz
+* nominal operating point; banks add tuning capacitance for lower frequencies.
+X_cap_msb outp outn msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+X_cap_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+
+
+* Layout parasitic approximation from generated SG13G2 top-metal layout
+Rpar_outp outp outp_pex 0.35
+Rpar_outn outn outn_pex 0.35
+Cpar_outp outp 0 65f
+Cpar_outn outn 0 65f
+Cpar_diff outp outn 22f
+* End parasitic approximation
+
+* ── RFC: DC bias to tank center ────────────────────────────────────────────
+* V_rfc (ideal): V(mid_L) = VDD at DC
+* For differential signals: mid_L = virtual ground → VDD tie doesn't affect diff oscillation ✓
+* Simple and avoids RFC-tank resonance issues
+V_rfc  mid_L  vdd  DC 0
+
+* ── NMOS-only negative-gm core ────────────────────────────────────────────
+X_gm  outp outn vs  cross_coupled_pair_nmos
+
+* ── LDO NMOS tail (voltage-mode: regulates V(vs) = V_ref) ─────────────────
+* V_ref at MSB=31,LSB=24: 0.300 + 31×9.68m + 24×4.5m = 0.708V
+* I_tail ≈ 500uA (M_tail W=200u, L=500n, Vgs=V_ctrl)
+X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 ldo_tail_nmos
+
+* ── Initial conditions ────────────────────────────────────────────────────
+* V(vs) starts at V_ref target; V(outp/outn) near VDD
+* V(X_tail.v_ctrl)=0.37: M_tail NMOS pre-charged → I_tail≈300uA at startup
+* Without this, v_ctrl starts at 0V → M_tail off → vs floats to VDD → no oscillation
+.ic V(outp)=0.850 V(outn)=0.650 V(vs)=0.470 V(X_tail.v_ctrl)=0.37
+
+* ── Transient simulation ──────────────────────────────────────────────────
+.tran 2p 300n uic
+
+.control
+run
+
+echo =============================================
+echo   NMOS-Only LC-DCO + LDO Tail Results
+echo =============================================
+
+meas tran v_max max v(outp) from=150n to=300n
+meas tran v_min min v(outp) from=150n to=300n
+let v_swing = v_max - v_min
+echo V_swing [V]:
+print v_swing
+
+meas tran i_vdd avg i(VDD) from=150n to=300n
+let p_dc_uW = -i_vdd * 0.9 * 1e6
+echo P_dc [uW]:
+print p_dc_uW
+
+meas tran vs_avg avg v(vs) from=150n to=300n
+echo V(vs) avg [V]:
+print vs_avg
+
+wrdata /home/whqkrel/rfic_project/results/post_layout_waveform.csv v(outp) v(outn) v(vs)
+echo Waveform saved.
+
+quit
+.endc
+
+.end

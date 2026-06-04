@@ -1,0 +1,144 @@
+* Injection-Locked PLL (IL-PLL) Top-Level
+* IHP SG13G2 130nm SiGe BiCMOS — BLE 2.4GHz
+*
+* Architecture (Okada lab style):
+*
+*   f_ref (48MHz XTAL)
+*       │
+*   [×50 harmonic injection]  ─── I_inj → outp (LC tank)
+*       │                             │
+*   LC-DCO (2.4GHz)  ←── injection locks DCO to 50×48MHz = 2.4GHz
+*       │
+*   outp/outn → BLE TX path
+*
+* Injection locking principle:
+*   - Free-running LC-DCO at ~2.4GHz (cap bank code sets coarse frequency)
+*   - Injection current at 48MHz → harmonics exist at 48×N MHz
+*   - 50th harmonic (50×48=2400MHz) perturbs the LC tank
+*   - Adler's equation: Δω_lock = ω0/(2Q) × I_inj/I_tank
+*   - Lock range ≈ ±(ω0/2Q) × (I_inj/I_tank) ≈ ±2.4G/(2×18.8) × (30u/502u) ≈ ±4.8MHz
+*
+* Block diagram:
+*   ┌─────────────────────────────────────────────┐
+*   │  IL-PLL                                     │
+*   │                                             │
+*   │  XTAL(48M)─→[Harmonic gen]─→I_inj ─────┐   │
+*   │                                         ↓   │
+*   │  [LC-DCO: 2.4GHz]──outp/outn──[BLE TX] │   │
+*   │       ↑                                  │   │
+*   │  [Cap bank DAC]◄──[Digital control]      │   │
+*   │  [Current DAC]                           │   │
+*   └─────────────────────────────────────────────┘
+
+* ============================================================
+* PDK Models
+* ============================================================
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+* ============================================================
+* Ideal switch model
+* ============================================================
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+* ============================================================
+* Sub-circuit blocks (LC-DCO)
+* ============================================================
+.include '/home/whqkrel/rfic_project/circuits/blocks/cross_coupled_pair.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_msb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_lsb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/lc_tank.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ptat_ref.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/tail_current_dac.cir'
+
+* ============================================================
+* Supply
+* ============================================================
+VDD vdd 0 DC 0.9
+
+* ============================================================
+* Cap bank control: MSB=31, LSB=24 → 2.4GHz operating point
+* ============================================================
+VMSB4 msb4 0 DC 1
+VMSB3 msb3 0 DC 1
+VMSB2 msb2 0 DC 1
+VMSB1 msb1 0 DC 1
+VMSB0 msb0 0 DC 1
+
+VLSB4 lsb4 0 DC 1
+VLSB3 lsb3 0 DC 1
+VLSB2 lsb2 0 DC 0
+VLSB1 lsb1 0 DC 0
+VLSB0 lsb0 0 DC 0
+
+* ============================================================
+* LC-DCO core
+* ============================================================
+X_tank outp outn msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 lc_tank
+X_gm   outp outn vdd vs cross_coupled_pair
+* Physical DAC reference (layout): X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 tail_current_dac
+* Ideal tail sink for simulation (vs→GND, required for CMOS pair operating point):
+I_tail vs 0 DC 502u
+
+* ============================================================
+* Injection signal: 48MHz reference → 50th harmonic at 2.4GHz
+*
+* Real IL-PLL: XTAL → frequency multiplier → transformer coupling
+* Simulation model: sinusoidal injection current at 48MHz
+*   The nonlinearity of the cross-coupled pair generates harmonics
+*   50th harmonic of 48MHz = 2400MHz matches LC-DCO → locking
+*
+* Injection amplitude: 30μA (I_inj/I_tank = 30/502 ≈ 6% → lock range ~±4.8MHz)
+* ============================================================
+I_inj  outp  0  SIN(0 30u 48Meg)
+
+* ============================================================
+* Initial conditions (PMOS DAC: vs starts slightly positive for convergence)
+* ============================================================
+.ic V(outp)=0.500 V(outn)=0.300 V(vs)=0.050
+
+* ============================================================
+* Transient: 500ns — observe injection locking transient
+*   0-100ns:   free-running (DCO starts up)
+*   100-200ns: injection at 48MHz begins to pull frequency
+*   300-500ns: steady-state locked at 2.4GHz
+* ============================================================
+.tran 2p 500n uic
+
+.control
+run
+
+echo =============================================
+echo   IL-PLL Injection Locking Simulation
+echo =============================================
+
+* Frequency measurement: early window (free-running estimate)
+meas tran v_max_early max v(outp) from=100n to=150n
+meas tran v_min_early min v(outp) from=100n to=150n
+let v_swing_early = v_max_early - v_min_early
+
+* Frequency measurement: late window (should be locked)
+meas tran v_max_late max v(outp) from=400n to=500n
+meas tran v_min_late min v(outp) from=400n to=500n
+let v_swing_late = v_max_late - v_min_late
+
+meas tran i_vdd_late avg i(VDD) from=400n to=500n
+let p_dc_uW = -i_vdd_late * 0.9 * 1e6
+
+echo V_swing early [V]:
+print v_swing_early
+echo V_swing late [V]:
+print v_swing_late
+echo P_dc [uW]:
+print p_dc_uW
+
+meas tran vs_late avg v(vs) from=400n to=500n
+echo V(vs) avg [V]:
+print vs_late
+
+wrdata /home/whqkrel/rfic_project/results/il_pll_data.csv v(outp) v(outn) v(vs)
+echo Waveform saved to il_pll_data.csv
+
+quit
+.endc
+
+.end

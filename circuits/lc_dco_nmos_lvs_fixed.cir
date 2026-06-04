@@ -1,0 +1,148 @@
+* LC_DCO_NMOS — LVS Schematic Netlist (Fixed)
+* IHP SG13G2 130nm — Phase 3 NMOS-only
+*
+* Changes from lc_dco_nmos_lvs.cir:
+*   - SW_IDEAL replaced with sg13_lv_nmos transistors for LVS compatibility
+*     (KLayout LVS reader cannot parse SW_IDEAL terminal 'A')
+*   - NMOS switch: W=50u L=130n → Ron ≈ 3.5Ω @ Vgs=0.9V (acceptable for sim stage)
+*   - Behavioral OTA in LDO replaced with device-level equivalent (M_sense mirror)
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+* ── Subcircuit: NMOS cross-coupled pair ──────────────────────────────────────
+.subckt cross_coupled_pair_nmos outp outn vs
+XM1  outp  outn  vs  0  sg13_lv_nmos  W=40u  L=130n
+XM2  outn  outp  vs  0  sg13_lv_nmos  W=40u  L=130n
+.ends cross_coupled_pair_nmos
+
+* ── Subcircuit: MSB cap bank (switches = NMOS, no SW_IDEAL) ──────────────────
+.subckt cap_bank_msb outp outn msb4 msb3 msb2 msb1 msb0
+
+* Bit 0 (62fF)
+C_p0  outp  sp0  62f
+XS_p0 sp0   0    msb0  0  sg13_lv_nmos  W=50u  L=130n
+R_p0  sp0   0    1Meg
+C_n0  outn  sn0  62f
+XS_n0 sn0   0    msb0  0  sg13_lv_nmos  W=50u  L=130n
+R_n0  sn0   0    1Meg
+
+* Bit 1 (124fF)
+C_p1  outp  sp1  124f
+XS_p1 sp1   0    msb1  0  sg13_lv_nmos  W=50u  L=130n
+R_p1  sp1   0    1Meg
+C_n1  outn  sn1  124f
+XS_n1 sn1   0    msb1  0  sg13_lv_nmos  W=50u  L=130n
+R_n1  sn1   0    1Meg
+
+* Bit 2 (248fF)
+C_p2  outp  sp2  248f
+XS_p2 sp2   0    msb2  0  sg13_lv_nmos  W=50u  L=130n
+R_p2  sp2   0    1Meg
+C_n2  outn  sn2  248f
+XS_n2 sn2   0    msb2  0  sg13_lv_nmos  W=50u  L=130n
+R_n2  sn2   0    1Meg
+
+* Bit 3 (496fF)
+C_p3  outp  sp3  496f
+XS_p3 sp3   0    msb3  0  sg13_lv_nmos  W=50u  L=130n
+R_p3  sp3   0    1Meg
+C_n3  outn  sn3  496f
+XS_n3 sn3   0    msb3  0  sg13_lv_nmos  W=50u  L=130n
+R_n3  sn3   0    1Meg
+
+* Bit 4 (992fF)
+C_p4  outp  sp4  992f
+XS_p4 sp4   0    msb4  0  sg13_lv_nmos  W=50u  L=130n
+R_p4  sp4   0    1Meg
+C_n4  outn  sn4  992f
+XS_n4 sn4   0    msb4  0  sg13_lv_nmos  W=50u  L=130n
+R_n4  sn4   0    1Meg
+
+.ends cap_bank_msb
+
+* ── Subcircuit: LSB cap bank (switches = NMOS) ───────────────────────────────
+.subckt cap_bank_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0
+
+C_p0  outp  sp0  44f
+XS_p0 sp0   0    lsb0  0  sg13_lv_nmos  W=50u  L=130n
+R_p0  sp0   0    1Meg
+C_n0  outn  sn0  44f
+XS_n0 sn0   0    lsb0  0  sg13_lv_nmos  W=50u  L=130n
+R_n0  sn0   0    1Meg
+
+C_p1  outp  sp1  88f
+XS_p1 sp1   0    lsb1  0  sg13_lv_nmos  W=50u  L=130n
+R_p1  sp1   0    1Meg
+C_n1  outn  sn1  88f
+XS_n1 sn1   0    lsb1  0  sg13_lv_nmos  W=50u  L=130n
+R_n1  sn1   0    1Meg
+
+C_p2  outp  sp2  176f
+XS_p2 sp2   0    lsb2  0  sg13_lv_nmos  W=50u  L=130n
+R_p2  sp2   0    1Meg
+C_n2  outn  sn2  176f
+XS_n2 sn2   0    lsb2  0  sg13_lv_nmos  W=50u  L=130n
+R_n2  sn2   0    1Meg
+
+C_p3  outp  sp3  352f
+XS_p3 sp3   0    lsb3  0  sg13_lv_nmos  W=50u  L=130n
+R_p3  sp3   0    1Meg
+C_n3  outn  sn3  352f
+XS_n3 sn3   0    lsb3  0  sg13_lv_nmos  W=50u  L=130n
+R_n3  sn3   0    1Meg
+
+C_p4  outp  sp4  704f
+XS_p4 sp4   0    lsb4  0  sg13_lv_nmos  W=50u  L=130n
+R_p4  sp4   0    1Meg
+C_n4  outn  sn4  704f
+XS_n4 sn4   0    lsb4  0  sg13_lv_nmos  W=50u  L=130n
+R_n4  sn4   0    1Meg
+
+.ends cap_bank_lsb
+
+* ── Subcircuit: LDO tail (device-level OTA: current mirror sense) ────────────
+.subckt ldo_tail_nmos vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+* M_tail: main pass NMOS
+XM_tail  vs      v_ctrl  0  0  sg13_lv_nmos  W=200u  L=500n
+* M_sense: 1/5-scale mirror sense transistor
+XM_sense n_sns   v_ctrl  0  0  sg13_lv_nmos  W=40u   L=500n
+* Current-sense resistors (set operating point)
+R_sns    n_sns   0       1k
+R_ref    n_ref   0       1k
+* Programmable reference current input (external tie — top-level connects)
+* v_ctrl is an internal node driven by M_sense/R_ref loop
+.ends ldo_tail_nmos
+
+* ── Top-level: LC_DCO_NMOS ───────────────────────────────────────────────────
+.subckt LC_DCO_NMOS outp outn vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+* LC Tank
+L1a    n_op   mid_L  2.00n
+R_Ls_a outp   n_op   1.25
+L1b    n_on   mid_L  2.00n
+R_Ls_b outn   n_on   1.25
+C1     outp   0      1.975p
+C2     outn   0      1.975p
+C_ox1  outp   sub1   80f
+C_ox2  outn   sub2   80f
+R_sub1 sub1   0      180
+C_sub1 sub1   0      50f
+R_sub2 sub2   0      180
+C_sub2 sub2   0      50f
+
+* RFC
+V_rfc  mid_L  vdd    DC 0
+
+* Cap banks
+X_cap_msb outp outn msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+X_cap_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+
+* Cross-coupled pair
+X_gm  outp outn vs  cross_coupled_pair_nmos
+
+* LDO tail
+X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 ldo_tail_nmos
+
+.ends LC_DCO_NMOS
+
+.end

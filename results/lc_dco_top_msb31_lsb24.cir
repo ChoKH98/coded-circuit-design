@@ -1,0 +1,118 @@
+* Subthreshold CMOS Cross-Coupled LC-DCO with CAP BANK + Current DAC
+* IHP SG13G2 130nm SiGe BiCMOS — Phase 2
+*
+* Design references:
+*   [1] Abbasizadeh 2018 — 260uW subthreshold LC-DCO
+*   [2] Okada lab — Synthesizable IL-PLL with LC-DCO
+*
+* Architecture:
+*   CMOS complementary cross-coupled pair (NMOS+PMOS)
+*   LC tank: L=1.28nH (FastHenry) + C_F + MSB(5b) + LSB(5b)
+*   Tail current DAC: same MSB bits control BOTH C and bias current
+*
+* Current DAC concept:
+*   As MSB increases → f decreases → R_p decreases → bias current increases
+*   → gm×R_p (loop gain) stays roughly constant across tuning range
+*   MSB=00000: bias current=100uA → P=120uW  (f≈4.42GHz, R_p=1073Ω)
+*   MSB=11111: bias current=410uA → P=492uW  (f≈2.80GHz, R_p= 425Ω)
+*
+* VDD=1.2V (nominal for IHP 130nm, Vthn+|Vthp|=0.79V)
+
+* ============================================================
+* PDK Models
+* ============================================================
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+* ============================================================
+* Ideal switch model (cap bank + current DAC switches)
+* Physical layout: NMOS W=50-100um for RF cap switch
+*                  NMOS W=2-32um for DC current DAC switch (Ron OK)
+* ============================================================
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+* ============================================================
+* Sub-circuit blocks
+* ============================================================
+.include '/home/whqkrel/rfic_project/circuits/blocks/cross_coupled_pair.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_msb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_lsb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/lc_tank.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/tail_current_dac.cir'
+
+* ============================================================
+* Supply
+* ============================================================
+VDD vdd 0 DC 1.2
+
+* ============================================================
+* CAP BANK + Current DAC digital control bits (same word)
+*   MSB=00000, LSB=00000 → f_max≈4.42GHz, bias current=100uA
+*   MSB=11111, LSB=~10111 → f≈2.4GHz,     bias current=410uA
+* ============================================================
+VMSB4 msb4 0 DC 1
+VMSB3 msb3 0 DC 1
+VMSB2 msb2 0 DC 1
+VMSB1 msb1 0 DC 1
+VMSB0 msb0 0 DC 1
+
+VLSB4 lsb4 0 DC 1
+VLSB3 lsb3 0 DC 1
+VLSB2 lsb2 0 DC 0
+VLSB1 lsb1 0 DC 0
+VLSB0 lsb0 0 DC 0
+
+* ============================================================
+* Circuit instantiation
+* ============================================================
+
+* LC tank with CAP BANKS
+X_tank outp outn msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 lc_tank
+
+* CMOS negative-gm core
+X_gm outp outn vdd vs cross_coupled_pair
+
+* Physical tail current DAC (MSB+LSB adaptive bias)
+* I_ref=30uA, L=130n — headroom fix vs original L=500n mirror
+X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 tail_current_dac
+
+* ============================================================
+* Initial conditions (corrected for IHP |Vthp|~0.625V)
+* Old .ic V(outp)=0.850: Vsg_PMOS=0.350V < 0.625V → PMOS OFF at startup!
+* New .ic V_mid=0.500V: Vsg_XM3(gate=0.400)=0.800V → PMOS ON ✓
+* ============================================================
+.ic V(outp)=0.600 V(outn)=0.400 V(vs)=0.100
+
+* ============================================================
+* Transient simulation: 200ns (150-200ns = steady-state window)
+* ============================================================
+.tran 2p 200n uic
+
+.control
+run
+
+echo =============================================
+echo   LC-DCO Phase 2 — Current DAC Results
+echo =============================================
+
+meas tran v_max max v(outp) from=150n to=200n
+meas tran v_min min v(outp) from=150n to=200n
+let v_swing = v_max - v_min
+echo V_swing [V]:
+print v_swing
+
+meas tran i_vdd avg i(VDD) from=150n to=200n
+let p_dc_uW = -i_vdd * 1.2 * 1e6
+echo P_dc [uW]:
+print p_dc_uW
+
+meas tran vs_avg avg v(vs) from=150n to=200n
+echo V(vs) avg [V]:
+print vs_avg
+
+wrdata /home/whqkrel/rfic_project/results/lc_dco_data.csv v(outp) v(outn) v(vs)
+echo Waveform saved.
+
+quit
+.endc
+
+.end

@@ -1,0 +1,121 @@
+* IL-PLL with Phase 3 NMOS-Only LC-DCO
+* IHP SG13G2 130nm SiGe BiCMOS — BLE 2.4GHz
+*
+* Architecture (Okada lab style):
+*   48 MHz XTAL → harmonic injection → 50th harmonic (2400 MHz) locks NMOS DCO
+*   Free-running point: MSB=0,LSB=0 → f_free = 2.4027 GHz
+*   Injection offset: 2.4027 - 2.4000 = 2.7 MHz
+*   Lock range (Adler): f0/(2Q) × I_inj/I_tank ≈ 2.4G/(2×18.85) × 30u/450u ≈ ±4.8 MHz
+*   2.7 MHz < 4.8 MHz → LOCK expected ✓
+*
+* Changes from il_pll_top.cir (CMOS → NMOS-only):
+*   - Symmetric L=4nH tank (2nH each side, Rs=1.25Ω each) replaces asymmetric lc_tank.cir
+*   - cross_coupled_pair_nmos replaces CMOS cross_coupled_pair
+*   - ldo_tail_nmos replaces ideal I_tail=502uA
+*   - MSB=0/LSB=0 is now the 2.4GHz nominal (CMOS used MSB=31/LSB=24)
+*   - RFC via V_rfc (ideal), not R_dc, for cleaner simulation
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+.include '/home/whqkrel/rfic_project/circuits/blocks/cross_coupled_pair_nmos.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_msb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_lsb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ptat_ref.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ldo_tail_nmos.cir'
+
+* ── Supply ──────────────────────────────────────────────────────────────────
+VDD vdd 0 DC 0.9
+
+* ── Cap bank codes: MSB=0, LSB=0 → f_free = 2.4027 GHz ─────────────────────
+VMSB4 msb4 0 DC 0
+VMSB3 msb3 0 DC 0
+VMSB2 msb2 0 DC 0
+VMSB1 msb1 0 DC 0
+VMSB0 msb0 0 DC 0
+VLSB4 lsb4 0 DC 0
+VLSB3 lsb3 0 DC 0
+VLSB2 lsb2 0 DC 0
+VLSB1 lsb1 0 DC 0
+VLSB0 lsb0 0 DC 0
+
+* ── LC Tank: L=4nH symmetric, C_F=1.975pF ───────────────────────────────────
+L1a    n_op  mid_L  2.00n
+R_Ls_a outp  n_op   1.25
+L1b    n_on  mid_L  2.00n
+R_Ls_b outn  n_on   1.25
+C1     outp  0      1.975p
+C2     outn  0      1.975p
+
+* Inductor substrate pi-model (L=4nH geometry)
+C_ox1  outp  sub1  80f
+C_ox2  outn  sub2  80f
+R_sub1 sub1  0     180
+C_sub1 sub1  0     50f
+R_sub2 sub2  0     180
+C_sub2 sub2  0     50f
+
+* ── Programmable cap banks ───────────────────────────────────────────────────
+X_cap_msb outp outn msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+X_cap_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+
+* ── RFC: DC bias to tank center (AC ground at mid_L) ────────────────────────
+V_rfc  mid_L  vdd  DC 0
+
+* ── NMOS-only negative-gm core ──────────────────────────────────────────────
+X_gm  outp outn vs  cross_coupled_pair_nmos
+
+* ── LDO NMOS tail ───────────────────────────────────────────────────────────
+X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 ldo_tail_nmos
+
+* ── Injection: 48MHz → 50th harmonic at 2400MHz ─────────────────────────────
+* Nonlinearity of NMOS pair generates harmonics; 50th (2400MHz) locks tank.
+* 30μA chosen for lock range ≈ ±4.8 MHz > 2.7 MHz offset → lock margin ×1.8
+I_inj  outp  0  SIN(0 30u 48Meg)
+
+* ── Initial conditions ───────────────────────────────────────────────────────
+.ic V(outp)=0.850 V(outn)=0.650 V(vs)=0.470 V(X_tail.v_ctrl)=0.37
+
+* ── Transient: 500ns ─────────────────────────────────────────────────────────
+*   0-150ns:   DCO startup, free-running at 2.4027 GHz
+*   150-300ns: injection begins pulling frequency toward 2.4000 GHz
+*   300-500ns: steady-state — should be locked at 2.4000 GHz
+.tran 2p 500n uic
+
+.control
+run
+
+echo =============================================
+echo   IL-PLL NMOS — Injection Locking Test
+echo =============================================
+
+* Early window: free-running
+meas tran v_max_early max v(outp) from=100n to=150n
+meas tran v_min_early min v(outp) from=100n to=150n
+let v_swing_early = v_max_early - v_min_early
+echo V_swing early (free-run) [V]:
+print v_swing_early
+
+* Late window: should be injection-locked
+meas tran v_max_late max v(outp) from=400n to=500n
+meas tran v_min_late min v(outp) from=400n to=500n
+let v_swing_late = v_max_late - v_min_late
+echo V_swing late (locked) [V]:
+print v_swing_late
+
+meas tran i_vdd_late avg i(VDD) from=400n to=500n
+let p_dc_uW = -i_vdd_late * 0.9 * 1e6
+echo P_dc locked [uW]:
+print p_dc_uW
+
+meas tran vs_late avg v(vs) from=400n to=500n
+echo V(vs) avg [V]:
+print vs_late
+
+wrdata /home/whqkrel/rfic_project/results/il_pll_nmos_data.csv v(outp) v(outn) v(vs)
+echo Waveform saved to il_pll_nmos_data.csv
+
+quit
+.endc
+
+.end

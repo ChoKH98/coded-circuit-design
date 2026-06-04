@@ -1,0 +1,123 @@
+* FastHenry2 — SG13G2 Spiral Inductor (4 nH target)
+* IHP SG13G2 130nm SiGe BiCMOS
+*
+* Geometry: square spiral, 5.5 turns, Metal5 (topmetal)
+*   Outer dimension:  170 µm × 170 µm
+*   Metal width:      8 µm
+*   Metal spacing:    4 µm  (pitch = 12 µm)
+*   Metal5 thickness: 3.0 µm
+*   Metal5 sheet Rs:  0.022 Ω/sq (aluminum)
+*   Substrate:        p-Si, σ = 10 S/m
+*
+* Expected: L ≈ 4 nH, Q ≈ 15-20 at 2.4 GHz, Rs ≈ 2-3 Ω
+* (Per-half for diff use: L/2 = 2 nH, Rs/2 = 1.25 Ω)
+*
+* Units: µm
+
+.Units um
+
+* Metal properties (Metal5 / AlCu)
+*   σ(AlCu) = 2.9e7 S/m = 29 S/µm  (with .Units um, sigma in S/µm)
+*   nhinc=3, nwinc=3: 9-segment cross-section for skin effect
+.Default sigma=29 nhinc=3 nwinc=3
+
+* ─── Spiral geometry parameters ───────────────────────────────────────────────
+* Square spiral, 5.5 turns, Metal5 (z = 3 µm above substrate)
+* Outer edge at ±85 µm from center
+* Layer height: z = 3.0 µm (Metal5 on ~3.5 µm dielectric stack)
+*
+* Winding trace: width=8 µm, height=3 µm
+* Segments numbered from outer port P1 inward to center port P2
+
+* Metal5 layer height above substrate
+* (approximate: SG13G2 BEOL ~3.5 µm dielectric + 3 µm Metal5)
+* z_bottom of Metal5 ≈ 3.5 µm
+
+* ─── Outer port (P1) ──────────────────────────────────────────────────────────
+* Start: top edge of outermost turn
+* N1 = north port terminal
+
+* Turn 1 (outermost): 170µm × 170µm, starts at top-left, winds clockwise
+* Segment lengths: outer=162µm (170-8), step inward by 12µm each half-turn
+
+* Node definitions (center of wire cross-section)
+* z = 5.0 µm (mid-height of Metal5 at bottom 3.5 + top 3.0/2 = 5.0)
+
+* Turn 1 — outer top (horizontal, left→right)
+N01  x=-81  y=81   z=5.0
+N02  x=81   y=81   z=5.0
+* Turn 1 — outer right (vertical, top→bottom)
+N03  x=81   y=-81  z=5.0
+* Turn 1 — outer bottom (horizontal, right→left)
+N04  x=-81  y=-81  z=5.0
+* Turn 1 — inner left (vertical, bottom→top, step in by pitch=12)
+N05  x=-81  y=69   z=5.0
+
+* Turn 2
+N06  x=69   y=69   z=5.0
+N07  x=69   y=-69  z=5.0
+N08  x=-69  y=-69  z=5.0
+N09  x=-69  y=57   z=5.0
+
+* Turn 3
+N10  x=57   y=57   z=5.0
+N11  x=57   y=-57  z=5.0
+N12  x=-57  y=-57  z=5.0
+N13  x=-57  y=45   z=5.0
+
+* Turn 4
+N14  x=45   y=45   z=5.0
+N15  x=45   y=-45  z=5.0
+N16  x=-45  y=-45  z=5.0
+N17  x=-45  y=33   z=5.0
+
+* Turn 5
+N18  x=33   y=33   z=5.0
+N19  x=33   y=-33  z=5.0
+N20  x=-33  y=-33  z=5.0
+N21  x=-33  y=21   z=5.0
+
+* Turn 5.5 — half turn to center tap
+N22  x=21   y=21   z=5.0
+N23  x=21   y=0    z=5.0
+* Center tap (via down to Metal1 for underpasses — simplified as same z)
+N_CT x=0    y=0    z=5.0
+
+* ─── Segments (wire elements) ──────────────────────────────────────────────────
+* E<n> N_start N_end w=<width> h=<height>
+* Width = 8 µm, Height = 3 µm (Metal5)
+
+E01 N01 N02 w=8 h=3
+E02 N02 N03 w=8 h=3
+E03 N03 N04 w=8 h=3
+E04 N04 N05 w=8 h=3
+E05 N05 N06 w=8 h=3
+E06 N06 N07 w=8 h=3
+E07 N07 N08 w=8 h=3
+E08 N08 N09 w=8 h=3
+E09 N09 N10 w=8 h=3
+E10 N10 N11 w=8 h=3
+E11 N11 N12 w=8 h=3
+E12 N12 N13 w=8 h=3
+E13 N13 N14 w=8 h=3
+E14 N14 N15 w=8 h=3
+E15 N15 N16 w=8 h=3
+E16 N16 N17 w=8 h=3
+E17 N17 N18 w=8 h=3
+E18 N18 N19 w=8 h=3
+E19 N19 N20 w=8 h=3
+E20 N20 N21 w=8 h=3
+E21 N21 N22 w=8 h=3
+E22 N22 N23 w=8 h=3
+E23 N23 N_CT w=8 h=3
+
+* ─── Ports ─────────────────────────────────────────────────────────────────────
+* P1: outer terminal (N01), P2: center tap (N_CT)
+.External N01 N_CT
+
+* ─── Frequency sweep ────────────────────────────────────────────────────────────
+* Sweep 0.1 GHz to 5 GHz — key point at 2.4 GHz
+.Freq fmin=1e8 fmax=5e9 ndec=10
+
+* ─── Output ─────────────────────────────────────────────────────────────────────
+.end

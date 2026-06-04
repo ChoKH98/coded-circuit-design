@@ -1,0 +1,67 @@
+* MSB Capacitor Bank — Coarse Tuning (5-bit, ideal switches)
+* Ref: Abbasizadeh 2018, Fig.2
+*
+* Unit cell structure:
+*   outp → [C_mom] → sw_node → [Ideal SW] → GND
+*                      |
+*                  [R_bleed=1MΩ] → GND
+*
+* Why ideal switches (not MOSFET):
+*   NMOS W=4u L=130n → Ron≈204Ω; 1/ωC≈103Ω at 4GHz
+*   G_loss = Ron/(Ron²+(1/ωC)²) = 3.9mS/side → kills oscillation
+*   To get Ron<1Ω needs W>800μm → impractical at sim stage
+*   Ideal switch (Ron=0.1Ω) for tuning range verification.
+*   Physical design: use W=50-100μm stack per bit.
+*
+* Binary-weighted: bit4(MSB)=16x, bit3=8x, bit2=4x, bit1=2x, bit0(LSB)=1x
+* C_unit = 62fF after 2.0nH retune → total when all ON: 31×62fF = 1.92pF
+* Frequency shift: f_max≈4.42GHz → f_min≈2.67GHz (MSB=11111, LSB=00000)
+
+.subckt cap_bank_msb outp outn msb4 msb3 msb2 msb1 msb0
+
+* -- Bit 0  (weight=1, C=62fF)
+C_p0  outp  sp0  62f
+S_p0  sp0   0    msb0  0  SW_IDEAL
+R_p0  sp0   0    1Meg
+
+C_n0  outn  sn0  62f
+S_n0  sn0   0    msb0  0  SW_IDEAL
+R_n0  sn0   0    1Meg
+
+* -- Bit 1  (weight=2, C=124fF)
+C_p1  outp  sp1  124f
+S_p1  sp1   0    msb1  0  SW_IDEAL
+R_p1  sp1   0    1Meg
+
+C_n1  outn  sn1  124f
+S_n1  sn1   0    msb1  0  SW_IDEAL
+R_n1  sn1   0    1Meg
+
+* -- Bit 2  (weight=4, C=248fF)
+C_p2  outp  sp2  248f
+S_p2  sp2   0    msb2  0  SW_IDEAL
+R_p2  sp2   0    1Meg
+
+C_n2  outn  sn2  248f
+S_n2  sn2   0    msb2  0  SW_IDEAL
+R_n2  sn2   0    1Meg
+
+* -- Bit 3  (weight=8, C=496fF)
+C_p3  outp  sp3  496f
+S_p3  sp3   0    msb3  0  SW_IDEAL
+R_p3  sp3   0    1Meg
+
+C_n3  outn  sn3  496f
+S_n3  sn3   0    msb3  0  SW_IDEAL
+R_n3  sn3   0    1Meg
+
+* -- Bit 4  (weight=16, C=992fF)
+C_p4  outp  sp4  992f
+S_p4  sp4   0    msb4  0  SW_IDEAL
+R_p4  sp4   0    1Meg
+
+C_n4  outn  sn4  992f
+S_n4  sn4   0    msb4  0  SW_IDEAL
+R_n4  sn4   0    1Meg
+
+.ends cap_bank_msb

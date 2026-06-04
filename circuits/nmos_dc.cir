@@ -1,0 +1,20 @@
+cat > ~/rfic_project/circuits/nmos_dc.cir << 'EOF'
+* IHP SG13G2 NMOS DC Characterization
+
+* Include IHP SG13G2 MOSFET models
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+Vgs gate 0 DC 0
+Vds drain 0 DC 0.6
+
+XM1 drain gate 0 0 sg13_lv_nmos W=1u L=130n
+
+.dc Vgs 0 1.2 0.01
+
+.control
+run
+wrdata /home/whqkrel/rfic_project/results/nmos_dc.csv i(Vds)
+quit
+.endc
+
+.end

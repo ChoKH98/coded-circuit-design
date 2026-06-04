@@ -1,0 +1,58 @@
+* Subthreshold CMOS PTAT Current Reference
+* IHP SG13G2 130nm SiGe BiCMOS
+*
+* Architecture: Vittoz self-biased subthreshold PTAT
+*   Branch 1: NMOS W=4u  → Vgs1 = Vth + n*Vt*ln(I/I0_4u)
+*   Branch 2: NMOS W=64u → Vgs2 = Vth + n*Vt*ln(I/I0_64u)
+*   PMOS mirror forces I1 = I2 = I_ptat
+*   Voltage across R_ptat = Vgs1 - Vgs2 = n*Vt*ln(K), K=16
+*   → I_ptat = n*Vt*ln(16) / R_ptat  ∝  T  (PTAT) ✓
+*
+* Calibration (IHP sg13g2, n≈1.3, T0=300K):
+*   I_ptat = 1.3 * 0.026 * ln(16) / 13.4kΩ = 7.0 uA at 27°C
+*   Temperature scaling: I_ptat(T) = 7uA * (T/300)
+*   Effect on gm: gm = I/(n*Vt) = const across T ✓
+*
+* Ports:
+*   vdd         : supply (0.9V)
+*   n_ptat_out  : connect to n_bias in tail_current_dac (replaces I_ref_n)
+*   p_ptat_out  : connect to p_bias in tail_current_dac (replaces I_ref_p)
+*
+* Physical note:
+*   R_ptat = poly resistor (TC≈+150ppm/°C)
+*   Slight positive TC partially cancels over-correction → use R=13.2kΩ in layout
+*   Long-channel PMOS (L=2u) for good Vds matching in mirror
+
+.subckt ptat_ref vdd n_ptat_out p_ptat_out
+
+* ── PTAT core ────────────────────────────────────────────────────
+* PMOS mirror: forces equal current in both NMOS branches
+* Long L=2u reduces channel-length modulation in mirror
+XMp1   nb1   nb1   vdd   vdd   sg13_lv_pmos   W=8u   L=2u
+XMp2   nb2   nb1   vdd   vdd   sg13_lv_pmos   W=8u   L=2u
+
+* Branch 1: NMOS diode W=4u
+* Vgs1 sets the gate voltage for NMOS current mirrors in DAC
+XMn1   nb1   nb1   0     0     sg13_lv_nmos   W=4u   L=500n
+
+* Branch 2: NMOS W=64u (K=16x) + PTAT resistor
+* Voltage across R_ptat = Vgs1 - Vgs2 = n*Vt*ln(16) ∝ T
+XMn2   nb2   nb2   nr    0     sg13_lv_nmos   W=64u  L=500n
+R_ptat nr    0     13.4k  tc1=0  tc2=0
+
+* Startup: prevents stuck-at-zero state
+* If both branches draw zero current, M_start pulls nb1 toward vdd
+* forcing XMn1 on, which breaks the degenerate zero-current point
+XMst   nb1   nb2   vdd   vdd   sg13_lv_pmos   W=2u   L=500n
+
+* ── Output 1: PMOS mirror → n_ptat_out ──────────────────────────
+* Sources I_ptat into n_ptat_out (= n_bias in DAC)
+* Replaces: I_ref_n vdd n_bias 7u
+XMp_n  n_ptat_out  nb1  vdd  vdd  sg13_lv_pmos  W=8u  L=2u
+
+* ── Output 2: NMOS mirror → p_ptat_out ─────────────────────────
+* Sinks I_ptat from p_ptat_out (= p_bias in DAC)
+* Replaces: I_ref_p p_bias 0 7u
+XMn_p  p_ptat_out  nb1  0   0    sg13_lv_nmos  W=4u  L=500n
+
+.ends ptat_ref

@@ -1,0 +1,24 @@
+* Tail Current Source — NMOS current mirror
+* Ref: Abbasizadeh 2018, Fig.2
+*
+* W increased 20u→80u to fix PMOS headroom collapse at high Ibias:
+*
+*   W=20u, Ibias=1740uA: Vgs_mirror=0.978V → V(vs)_min=0.568V
+*     Vmid=(1.2+0.568)/2=0.884V → PMOS Vsg=0.316V < |Vthp|=0.38V → OFF
+*
+*   W=80u, Ibias=1740uA: Vgs_mirror=0.694V → V(vs)_min=0.284V
+*     Vmid=(1.2+0.284)/2=0.742V → PMOS Vsg=0.458V > 0.38V → ON ✓
+*
+* Headroom constraint: max useful Ibias ≈ 2.0mA with W=80u
+* Long channel L=500n: high output impedance, good current matching
+
+.subckt tail_current vs vdd ibias_val=300u
+
+* Diode-connected reference
+I_ref vdd n_bias 'ibias_val'
+XM_bias n_bias n_bias 0 0 sg13_lv_nmos W=80u L=500n
+
+* Tail mirror transistor (same W for 1:1 ratio)
+XM_tail vs n_bias 0 0 sg13_lv_nmos W=80u L=500n
+
+.ends tail_current

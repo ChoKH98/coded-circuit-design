@@ -1,0 +1,9 @@
+rows_total=100020
+window_rows=25001
+V_swing_mV=0.000047000
+P_dc_uW=617.963665255
+V_vs_avg_V=0.01034773021
+FFT_freq_GHz=0.020000290
+Oscillation=FAIL
+diagnostics=NONE
+node_list=No. of Data Rows : 100020

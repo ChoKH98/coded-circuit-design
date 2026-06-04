@@ -1,0 +1,5 @@
+LDO V_ref tracking verification
+Formula: V_ref = 0.470 - 0.00400*MSB - 0.00250*LSB
+Monotonic non-increasing over checked code path: True
+V_ref min/max over checked path: 0.2685 / 0.4700 V
+Interpretation: higher cap code lowers source reference, increasing NMOS overdrive and restoring oscillation at high capacitance.

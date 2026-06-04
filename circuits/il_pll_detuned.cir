@@ -1,0 +1,57 @@
+* IL-PLL Injection Locking Demo — Direct 2.4GHz injection
+* IHP SG13G2 130nm, VDD=0.9V
+*
+* MSB=31, LSB=23 (10111) → f_free ≈ 2.41GHz (~10MHz above 2.40GHz)
+* Direct injection at 2.4GHz, 100uA, starts at t=150ns
+*
+* Adler lock range = f0/(2*Q_L) * I_inj/I_tank
+*                 = 2.4G/(2*18.85) * 100u/497u ≈ ±12.8MHz
+* Offset = ~10MHz < 12.8MHz → LOCK expected ✓
+*
+* Expected behavior:
+*   0-150ns:   f_free ≈ 2.41GHz (no injection)
+*   150ns+:    injection at 2.40GHz pulls DCO → locks to 2.40GHz
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+.include '/home/whqkrel/rfic_project/circuits/blocks/cross_coupled_pair.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_msb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_lsb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/lc_tank.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ptat_ref.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/tail_current_dac.cir'
+
+VDD vdd 0 DC 0.9
+
+* LSB=23: bits5(23)=[1,0,1,1,1] → lsb4=1,lsb3=0,lsb2=1,lsb1=1,lsb0=1
+VMSB4 msb4 0 DC 1
+VMSB3 msb3 0 DC 1
+VMSB2 msb2 0 DC 1
+VMSB1 msb1 0 DC 1
+VMSB0 msb0 0 DC 1
+VLSB4 lsb4 0 DC 1
+VLSB3 lsb3 0 DC 0
+VLSB2 lsb2 0 DC 1
+VLSB1 lsb1 0 DC 1
+VLSB0 lsb0 0 DC 1
+
+X_tank outp outn msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 lc_tank
+X_gm   outp outn vdd vs cross_coupled_pair
+I_tail vs 0 DC 497u
+
+* Direct injection at 2.4GHz, 100uA amplitude, delay 150ns
+* 200uA injection → lock range ±25.6MHz >> 10MHz offset → stable lock
+I_inj outp 0 SIN(0 200u 2.4GHz 150n)
+
+.ic V(outp)=0.500 V(outn)=0.300 V(vs)=0.050
+.tran 2p 500n uic
+
+.control
+run
+wrdata /home/whqkrel/rfic_project/results/il_pll_detuned.csv v(outp) v(outn) v(vs)
+echo Saved.
+quit
+.endc
+
+.end

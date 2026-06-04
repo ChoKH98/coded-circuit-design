@@ -1,0 +1,7 @@
+LC-DCO layout generation report
+Top cell: LC_DCO_NMOS
+PDK layer source: IHP SG13G2 sg13g2.map
+Layers used: Metal1 8/0, Metal2 10/0, Metal5 67/0, TopMetal1 126/0, TopMetal2 134/0, pins 134/2
+Placed: cross-coupled NMOS marker, LC tank top-metal conductors, cap-bank arrays, LDO/tail marker
+GDS: /home/whqkrel/rfic_project/layouts/lc_dco_nmos.gds
+OAS: /home/whqkrel/rfic_project/layouts/lc_dco_nmos.oas

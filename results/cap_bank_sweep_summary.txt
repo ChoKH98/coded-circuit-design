@@ -1,0 +1,7 @@
+Cap bank sweep summary
+Template: /home/whqkrel/rfic_project/circuits/lc_dco_nmos_top.cir
+Points: 64
+Oscillating points: 64
+Min frequency GHz: 1.5020
+Max frequency GHz: 2.4029
+Tuning range GHz: 0.9009

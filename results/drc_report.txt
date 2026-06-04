@@ -1,0 +1,55 @@
+DRC report
+Command: klayout -b -r /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/drc/ihp-sg13g2.drc -rd input=/home/whqkrel/rfic_project/layouts/lc_dco_nmos.gds -rd topcell=LC_DCO_NMOS -rd report=/home/whqkrel/rfic_project/results/drc_lc_dco_nmos/lc_dco_nmos.lyrdb -rd log=/home/whqkrel/rfic_project/results/drc_lc_dco_nmos/drc.log -rd run_mode=flat -rd no_feol=true -rd no_density=true -rd no_angle=true -rd disable_extra_rules=true
+Return code: 1
+Run directory: /home/whqkrel/rfic_project/results/drc_lc_dco_nmos
+Marker databases: ['/home/whqkrel/rfic_project/results/drc_lc_dco_nmos/lc_dco_nmos.lyrdb']
+Status: blocked
+
+Output tail:
+ Memory Usage (587976K) : exchange3_text has 0 polygons
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : exchange4_drw has 0 polygons
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : exchange4_pin has 0 polygons
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : exchange4_text has 0 polygons
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : isonwell_drw has 0 polygons
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Total no. of polygons in the design is 62
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Loaded TECH DRC rules values from /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/python/sg13g2_pycell_lib/sg13g2_tech_mod.json
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Loaded default DRC rules values from /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/drc/rule_decks/sg13g2_tech_default.json
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : The following rules values were missing in tech json and default values were used:
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) :   - NW_f1_digibnd
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) :   - Cnt_c_digibnd
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) :   - Cnt_c_sram
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) :   - Sdiod_b
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) :   - Sdiod_c
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Total area of the design is 117290.0 um^2.
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : The design dimensions are 370.0 µm * 317.0 µm.
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting general IHP-SG13G2 derivations.
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting Pwell derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting n-Activ derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting p-Activ derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting ptap derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting ntap derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting pact FET derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting nact FET derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting Gate derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting cont/contbar general derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting pad general derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting schottky_nbl general derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting SVaricap general derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting HBT general derivations
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting IHP-SG13G2 DRC rules.
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Running all BEOL rules
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Running all PIN rules
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Running all FORBIDDEN rules
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Starting 5.16. Metal1 table
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Executing rule M1.a
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Executing rule M1.b
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Executing rule M1.e
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Executing rule M1.f
+2026-06-04 00:48:06 +0900: Memory Usage (587976K) : Executing rule M1.g
+
+ERROR: In /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/drc/ihp-sg13g2.drc: undefined local variable or method `absolute' for DRCEngine(...):DRC::DRCEngine
+ERROR: NameError: undefined local variable or method `absolute' for DRCEngine(...):DRC::DRCEngine in Executable::execute
+  /home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/klayout/tech/drc/rule_decks/beol/5_16_metal1.drc:73:in `execute'
+  :/built-in-macros/drc_interpreters.lym:31:in `instance_eval'
+  :/built-in-macros/drc_interpreters.lym:31:in `execute'
+

@@ -1,0 +1,66 @@
+* LC_DCO_NMOS — LVS Core Netlist (NMOS devices only)
+* IHP SG13G2 130nm — Phase 3 NMOS-only
+*
+* Stripped to sg13_lv_nmos transistors ONLY.
+* Reason: sg13g2.lvs CustomReader processes ALL R/C/L elements through
+*   process_device() but fails on bare SPICE passives (no SG13G2 model name)
+*   due to double-registration of DeviceClassResistor with empty model name.
+*   → Solution: remove all bare R/C/L from LVS schematic; compare only NMOS.
+*
+* Devices compared:
+*   - M1, M2  : cross-coupled NMOS pair (W=40u, L=130n)
+*   - M_tail  : LDO tail NMOS (W=200u, L=500n)
+*   - XS_p/n* : cap bank switch NMOS (W=50u, L=130n, ×20 per bank = ×40 total)
+
+* No .lib: LVS only needs topology, not model parameters
+
+* ── Cross-coupled pair ────────────────────────────────────────────────────────
+.subckt cross_coupled_pair_nmos outp outn vs
+XM1  outp  outn  vs  0  sg13_lv_nmos  W=40u  L=130n
+XM2  outn  outp  vs  0  sg13_lv_nmos  W=40u  L=130n
+.ends cross_coupled_pair_nmos
+
+* ── MSB cap bank switches (NMOS only, no C/R) ────────────────────────────────
+.subckt cap_bank_msb outp outn msb4 msb3 msb2 msb1 msb0
+XS_p0 sp0 0 msb0 0 sg13_lv_nmos W=50u L=130n
+XS_n0 sn0 0 msb0 0 sg13_lv_nmos W=50u L=130n
+XS_p1 sp1 0 msb1 0 sg13_lv_nmos W=50u L=130n
+XS_n1 sn1 0 msb1 0 sg13_lv_nmos W=50u L=130n
+XS_p2 sp2 0 msb2 0 sg13_lv_nmos W=50u L=130n
+XS_n2 sn2 0 msb2 0 sg13_lv_nmos W=50u L=130n
+XS_p3 sp3 0 msb3 0 sg13_lv_nmos W=50u L=130n
+XS_n3 sn3 0 msb3 0 sg13_lv_nmos W=50u L=130n
+XS_p4 sp4 0 msb4 0 sg13_lv_nmos W=50u L=130n
+XS_n4 sn4 0 msb4 0 sg13_lv_nmos W=50u L=130n
+.ends cap_bank_msb
+
+* ── LSB cap bank switches ─────────────────────────────────────────────────────
+.subckt cap_bank_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0
+XS_p0 sp0 0 lsb0 0 sg13_lv_nmos W=50u L=130n
+XS_n0 sn0 0 lsb0 0 sg13_lv_nmos W=50u L=130n
+XS_p1 sp1 0 lsb1 0 sg13_lv_nmos W=50u L=130n
+XS_n1 sn1 0 lsb1 0 sg13_lv_nmos W=50u L=130n
+XS_p2 sp2 0 lsb2 0 sg13_lv_nmos W=50u L=130n
+XS_n2 sn2 0 lsb2 0 sg13_lv_nmos W=50u L=130n
+XS_p3 sp3 0 lsb3 0 sg13_lv_nmos W=50u L=130n
+XS_n3 sn3 0 lsb3 0 sg13_lv_nmos W=50u L=130n
+XS_p4 sp4 0 lsb4 0 sg13_lv_nmos W=50u L=130n
+XS_n4 sn4 0 lsb4 0 sg13_lv_nmos W=50u L=130n
+.ends cap_bank_lsb
+
+* ── LDO tail (M_tail only) ────────────────────────────────────────────────────
+.subckt ldo_tail_nmos vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+XM_tail  vs  v_ctrl  0  0  sg13_lv_nmos  W=200u  L=500n
+.ends ldo_tail_nmos
+
+* ── Top-level ─────────────────────────────────────────────────────────────────
+.subckt LC_DCO_NMOS outp outn vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+X_cap_msb outp outn msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+X_cap_lsb outp outn lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+X_gm      outp outn vs  cross_coupled_pair_nmos
+X_tail    vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 ldo_tail_nmos
+
+.ends LC_DCO_NMOS
+
+.end

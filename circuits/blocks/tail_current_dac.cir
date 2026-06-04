@@ -1,0 +1,83 @@
+* CMOS Push-Pull Tail Current DAC — PMOS-only Mirror (Phase 3 Final)
+* IHP SG13G2 130nm SiGe BiCMOS
+*
+* Architecture: PMOS-only source mirror array
+*   Problem with previous design: NMOS mirror drain = vs = -0.17V → Vds<0 → triode
+*   Solution: ALL mirrors are PMOS, drain=vs, Vsd = VDD - vs = 1.07V >> Vdsat → sat ✓
+*
+*   CMOS complementary cross-coupled pair UNCHANGED (keep vs = -0.17V for subthreshold)
+*   All programmable current = PMOS sourcing INTO vs
+*
+*   PTAT temperature compensation via ptat_ref.cir (p_bias ∝ T → I_ptat ∝ T → gm=const)
+*
+* Current map (I_ref=7μA from ptat_ref at 300K):
+*   MSB=00000 LSB=00000: base only         = 96uA
+*   MSB=11111 LSB=00000: base + all MSB    = 96 + 31×9.6 = 393.6uA
+*   MSB=11111 LSB=11000: base + MSB + part = 96 + 297.6 + 108 = 501.6uA
+*   MSB=11111 LSB=11111: base + all        = 96 + 297.6 + 139.5 = 533.1uA
+*
+* Ports: vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+.subckt tail_current_dac vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0
+
+* ── PTAT reference: p_bias = PMOS gate bias ∝ T ─────────────────────────────
+* ptat_ref generates p_bias such that I_ref_pmos = 7uA × T/300
+* n_ptat_out unused here (no NMOS reference needed in PMOS-only DAC)
+X_ptat  vdd  nc_n  p_bias  ptat_ref
+
+* ── PMOS reference diode: sets p_bias voltage ───────────────────────────────
+XM_pref    p_bias  p_bias  vdd  vdd  sg13_lv_pmos  W=2u   L=130n
+
+* ── PMOS base mirror: always-on, sources 96uA into vs ───────────────────────
+* W = 2u × (96/7) = 27.4u → 27u
+* Vsd = VDD - vs = 0.9 - (-0.17) = 1.07V >> Vdsat ≈ 0.1V → saturation ✓
+XM_base    vs  p_bias  vdd  vdd  sg13_lv_pmos  W=27u  L=130n
+
+* ── MSB mirror array: programmable coarse current ───────────────────────────
+* Each bit sourced via SW_IDEAL switch: vs ← switch ← PMOS drain
+* SW connects vs to PMOS drain node when bit=1
+
+* MSB4: 16 × 9.6uA = 153.6uA, W = 2u × (153.6/7) = 43.9u → 44u
+SW_msb4  vs  nd_m4  msb4  0  SW_IDEAL
+XM_msb4  nd_m4  p_bias  vdd  vdd  sg13_lv_pmos  W=44u  L=130n
+
+* MSB3: 8 × 9.6uA = 76.8uA, W = 22u
+SW_msb3  vs  nd_m3  msb3  0  SW_IDEAL
+XM_msb3  nd_m3  p_bias  vdd  vdd  sg13_lv_pmos  W=22u  L=130n
+
+* MSB2: 4 × 9.6uA = 38.4uA, W = 11u
+SW_msb2  vs  nd_m2  msb2  0  SW_IDEAL
+XM_msb2  nd_m2  p_bias  vdd  vdd  sg13_lv_pmos  W=11u  L=130n
+
+* MSB1: 2 × 9.6uA = 19.2uA, W = 5.5u
+SW_msb1  vs  nd_m1  msb1  0  SW_IDEAL
+XM_msb1  nd_m1  p_bias  vdd  vdd  sg13_lv_pmos  W=5.5u  L=130n
+
+* MSB0: 1 × 9.6uA = 9.6uA, W = 2.75u
+SW_msb0  vs  nd_m0  msb0  0  SW_IDEAL
+XM_msb0  nd_m0  p_bias  vdd  vdd  sg13_lv_pmos  W=2.75u  L=130n
+
+* ── LSB mirror array: programmable fine current ─────────────────────────────
+* LSB unit = 4.5uA, W = 2u × (4.5/7) = 1.29u → 1.3u
+
+* LSB4: 16 × 4.5uA = 72uA, W = 21u
+SW_lsb4  vs  nd_l4  lsb4  0  SW_IDEAL
+XM_lsb4  nd_l4  p_bias  vdd  vdd  sg13_lv_pmos  W=21u  L=130n
+
+* LSB3: 8 × 4.5uA = 36uA, W = 10u
+SW_lsb3  vs  nd_l3  lsb3  0  SW_IDEAL
+XM_lsb3  nd_l3  p_bias  vdd  vdd  sg13_lv_pmos  W=10u  L=130n
+
+* LSB2: 4 × 4.5uA = 18uA, W = 5u
+SW_lsb2  vs  nd_l2  lsb2  0  SW_IDEAL
+XM_lsb2  nd_l2  p_bias  vdd  vdd  sg13_lv_pmos  W=5u  L=130n
+
+* LSB1: 2 × 4.5uA = 9uA, W = 2.6u
+SW_lsb1  vs  nd_l1  lsb1  0  SW_IDEAL
+XM_lsb1  nd_l1  p_bias  vdd  vdd  sg13_lv_pmos  W=2.6u  L=130n
+
+* LSB0: 1 × 4.5uA = 4.5uA, W = 1.3u
+SW_lsb0  vs  nd_l0  lsb0  0  SW_IDEAL
+XM_lsb0  nd_l0  p_bias  vdd  vdd  sg13_lv_pmos  W=1.3u  L=130n
+
+.ends tail_current_dac

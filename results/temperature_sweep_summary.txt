@@ -1,0 +1,12 @@
+Temperature sweep summary
+Template: /home/whqkrel/rfic_project/circuits/lc_dco_nmos_top.cir
+fixed mode: nominal code-driven B_vref expression is simulated at each .temp
+ptat mode: B_vref base is rewritten per temperature with -0.5mV/C slope to emulate PTAT tail-current tracking in the simulated netlist
+fixed: oscillating 4/4
+fixed: min_frequency_GHz=1.5400
+fixed: max_frequency_GHz=1.5400
+fixed: deviation_MHz=0.0
+ptat: oscillating 4/4
+ptat: min_frequency_GHz=1.5400
+ptat: max_frequency_GHz=1.5600
+ptat: deviation_MHz=20.0

@@ -1,0 +1,6 @@
+
+Note: No compatibility mode selected!
+
+
+Circuit: * nmos-only cross-coupled lc-dco + ldo tail
+

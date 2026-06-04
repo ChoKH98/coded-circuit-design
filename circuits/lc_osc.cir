@@ -1,0 +1,61 @@
+* CMOS Cross-Coupled LC Oscillator
+* IHP SG13G2 130nm - Basic DCO Core
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+* Supply
+VDD vdd 0 DC 1.2
+
+* LC Tank (larger inductor retune: L=2.00nH, Rs=1.6ohm)
+* Capacitance is scaled by 1.28/2.00 to keep the original frequency target.
+L1 outp mid_L 2.00n
+R_Ls mid_L outn 1.6
+C1 outp 0 1.10p
+C2 outn 0 1.10p
+
+* PMOS Cross-Coupled Pair
+XM3 outp outn vdd vdd sg13_lv_pmos W=10u L=130n
+XM4 outn outp vdd vdd sg13_lv_pmos W=10u L=130n
+
+* NMOS Cross-Coupled Pair
+XM1 outp outn vs vs sg13_lv_nmos W=10u L=130n
+XM2 outn outp vs vs sg13_lv_nmos W=10u L=130n
+
+* Tail Current Source (320uA, scaled from 500uA by 1.28/2.00)
+XM_tail vs n_bias 0 0 sg13_lv_nmos W=20u L=500n
+XM_bias n_bias n_bias 0 0 sg13_lv_nmos W=20u L=500n
+I_bias vdd n_bias 320u
+
+* Initial conditions
+.ic V(outp)=1.0 V(outn)=0.4
+
+* Transient
+.tran 1p 20n uic
+
+.control
+run
+
+* Measure frequency
+meas tran t1 when v(outp)=0.6 rise=5
+meas tran t2 when v(outp)=0.6 rise=6
+let f_osc = 1/(t2-t1)
+print f_osc
+
+* Measure swing
+meas tran v_max max v(outp) from=10n to=20n
+meas tran v_min min v(outp) from=10n to=20n
+let v_swing = v_max - v_min
+print v_swing
+
+* Measure power
+meas tran i_avg avg i(VDD) from=10n to=20n
+let p_dc = -i_avg * 1.2
+print p_dc
+
+* Save waveforms
+wrdata /home/whqkrel/rfic_project/results/lc_osc_data.csv v(outp) v(outn)
+
+quit
+.endc
+
+.end

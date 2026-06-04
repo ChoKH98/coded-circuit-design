@@ -1,0 +1,120 @@
+* NMOS-Only LC-DCO — Post-Layout Estimated Simulation
+* IHP SG13G2 130nm SiGe BiCMOS — Phase 3
+*
+* Parasitic estimates based on SG13G2 130nm design rules + typical compact layout:
+*
+*   C_route (outp, outn):  +100fF each  [metal M1-M3 routing to cross-coupled pair]
+*   R_route (outp, outn):  +1.5Ω each  [M2 routing ~15 squares @ 0.1Ω/sq]
+*   C_via   (vs node):     +20fF        [via stack from M1 to M3]
+*   C_gate  (gate nodes):  +15fF each   [gate routing M1]
+*
+* Expected frequency shift: Δf/f ≈ -ΔC/(2C_total) ≈ -100f/(2×2075f) ≈ -2.4%
+*   → f_postlayout ≈ 2.403 × 0.976 ≈ 2.345 GHz (schematic → post-layout estimate)
+*
+* This is an *estimated* post-layout netlist.
+* True post-layout requires KLayout PEX extraction (lc_dco_nmos_extracted.cir).
+
+.lib "/home/whqkrel/tools/IHP-Open-PDK/ihp-sg13g2/libs.tech/ngspice/models/cornerMOSlv.lib" mos_tt
+
+.model SW_IDEAL SW(Ron=0.1 Roff=1Meg Vt=0.5 Vh=0.1)
+
+.include '/home/whqkrel/rfic_project/circuits/blocks/cross_coupled_pair_nmos.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_msb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/cap_bank_lsb.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ptat_ref.cir'
+.include '/home/whqkrel/rfic_project/circuits/blocks/ldo_tail_nmos.cir'
+
+* ── Supply ──────────────────────────────────────────────────────────────────
+VDD vdd 0 DC 0.9
+
+* ── Cap bank codes: MSB=0, LSB=0 (nominal) ──────────────────────────────────
+VMSB4 msb4 0 DC 0
+VMSB3 msb3 0 DC 0
+VMSB2 msb2 0 DC 0
+VMSB1 msb1 0 DC 0
+VMSB0 msb0 0 DC 0
+VLSB4 lsb4 0 DC 0
+VLSB3 lsb3 0 DC 0
+VLSB2 lsb2 0 DC 0
+VLSB1 lsb1 0 DC 0
+VLSB0 lsb0 0 DC 0
+
+* ── LC Tank (identical to schematic) ────────────────────────────────────────
+L1a    n_op  mid_L  2.00n
+R_Ls_a outp  n_op   1.25
+L1b    n_on  mid_L  2.00n
+R_Ls_b outn  n_on   1.25
+C1     outp  0      1.975p
+C2     outn  0      1.975p
+
+C_ox1  outp  sub1  80f
+C_ox2  outn  sub2  80f
+R_sub1 sub1  0     180
+C_sub1 sub1  0     50f
+R_sub2 sub2  0     180
+C_sub2 sub2  0     50f
+
+* ── POST-LAYOUT PARASITICS ───────────────────────────────────────────────────
+* Routing resistance: M2 metal from tank node to transistor drain
+R_rt_p  outp   outp_x  1.5
+R_rt_n  outn   outn_x  1.5
+
+* Routing capacitance: metal area cap at output nodes (M1–M3 stack)
+C_rt_p  outp   0       100f
+C_rt_n  outn   0       100f
+
+* Via capacitance at vs node
+C_via_vs  vs   0       20f
+
+* Gate routing capacitance (inside X_gm, modeled externally here)
+C_gt_p  outn  0  15f
+C_gt_n  outp  0  15f
+
+* ── Cap banks ────────────────────────────────────────────────────────────────
+X_cap_msb outp_x outn_x msb4 msb3 msb2 msb1 msb0 cap_bank_msb
+X_cap_lsb outp_x outn_x lsb4 lsb3 lsb2 lsb1 lsb0 cap_bank_lsb
+
+* ── RFC ──────────────────────────────────────────────────────────────────────
+V_rfc  mid_L  vdd  DC 0
+
+* ── NMOS core (connected to post-routing nodes) ──────────────────────────────
+X_gm  outp_x outn_x vs  cross_coupled_pair_nmos
+
+* ── LDO NMOS tail ────────────────────────────────────────────────────────────
+X_tail vs vdd msb4 msb3 msb2 msb1 msb0 lsb4 lsb3 lsb2 lsb1 lsb0 ldo_tail_nmos
+
+* ── Initial conditions ───────────────────────────────────────────────────────
+.ic V(outp)=0.850 V(outn)=0.650 V(outp_x)=0.850 V(outn_x)=0.650 V(vs)=0.470 V(X_tail.v_ctrl)=0.37
+
+* ── Transient ────────────────────────────────────────────────────────────────
+.tran 2p 300n uic
+
+.control
+run
+
+echo =============================================
+echo   Post-Layout Estimated Simulation
+echo =============================================
+
+meas tran v_max max v(outp) from=150n to=300n
+meas tran v_min min v(outp) from=150n to=300n
+let v_swing = v_max - v_min
+echo V_swing [V]:
+print v_swing
+
+meas tran i_vdd avg i(VDD) from=150n to=300n
+let p_dc_uW = -i_vdd * 0.9 * 1e6
+echo P_dc [uW]:
+print p_dc_uW
+
+meas tran vs_avg avg v(vs) from=150n to=300n
+echo V(vs) avg [V]:
+print vs_avg
+
+wrdata /home/whqkrel/rfic_project/results/postlayout_nmos_data.csv v(outp) v(outn) v(vs)
+echo Waveform saved.
+
+quit
+.endc
+
+.end
